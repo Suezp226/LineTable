@@ -22,7 +22,7 @@
     height: 40px;
     line-height: 40px;
     border-bottom: 1px solid black;
-    background-color: pink;
+    background-color: #42a5f5;
     text-align: center;
   }
 </style>

@@ -23,7 +23,11 @@ export default {
 
 <style lang="less">
 * {
-  list-style: none;
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
 }
 html {
   height: 100%;
