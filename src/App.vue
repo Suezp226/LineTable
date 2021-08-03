@@ -1,22 +1,55 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <div id="app">
+    <header-nav></header-nav>
+    <div class="contentBox">
+      <menu-nav></menu-nav>
+      <router-view class="routerBox" ></router-view>
+    </div>
+  </div>
 </template>
 
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import HeaderNav from './components/HeaderNav.vue'
+import MenuNav from './components/MenuNav.vue'
+export default {
+  name: 'App',
+  components: {HeaderNav, MenuNav},
+  setup(props) {
+    return {}
+  }
+}
 
-// This starter template is using Vue 3 experimental <script setup> SFCs
-// Check out https://github.com/vuejs/rfcs/blob/master/active-rfcs/0040-script-setup.md
 </script>
 
-<style>
+<style lang="less">
+* {
+  list-style: none;
+}
+html {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.contentBox {
+  flex:1;
+  display: flex;
+  .routerBox {
+    flex: 1;
+    padding: 10px;
+    box-sizing: border-box;
+  }
 }
 </style>

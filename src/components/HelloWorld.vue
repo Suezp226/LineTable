@@ -12,20 +12,48 @@
   <button type="button" @click="state.count++">
     count is: {{ state.count }}
   </button>
+  <hr>
+  <button type="button" @click="num++">
+    num is: {{ num }}
+  </button>
+  <h1>{{string}}</h1>
   <p>
     Edit
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
 </template>
 
-<script setup>
-import { defineProps, reactive } from 'vue'
+<script>
+import { reactive, ref, onMounted, watch } from 'vue'
 
-defineProps({
-  msg: String
-})
+export default {
+  components:{},
+  props: {
+    user: {
+      type: String,
+      require: false
+    },
+    msg: String
+  },
+  setup(props) {
+    const state = reactive({count: 0})
+    onMounted(()=>{
+      console.log('onMounted');
+    })
+    const num = ref(10);
+    watch(num,(newVal,oldVal)=>{
+      console.log('state.count \n old:',oldVal, '\n new:', newVal)
+    })
+    const string = '我在这啊老哥'
+    onMounted(()=>{
+      console.log('onMounted2')
+    })
+    return {
+      num, string, state
+    }
+  }
+}
 
-const state = reactive({ count: 0 })
 </script>
 
 <style scoped>
