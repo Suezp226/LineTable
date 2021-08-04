@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <header-nav></header-nav>
+    <menu-nav></menu-nav>
     <div class="contentBox">
-      <menu-nav></menu-nav>
-      <router-view class="routerBox" ></router-view>
+      <header-nav></header-nav>
+      <div class="routerBox" >
+        <router-view></router-view>
+      </div>
     </div>
   </div>
 </template>
@@ -44,16 +46,35 @@ body {
 }
 #app {
   height: 100%;
+  width: 100%;
   display: flex;
-  flex-direction: column;
 }
 .contentBox {
   flex:1;
   display: flex;
+  flex-direction: column;
   .routerBox {
     flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 10px;
     box-sizing: border-box;
+    background: #f1f4f5;
   }
+}
+.mainBox {
+  min-height:100%;
+  width: 100%;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 35%);
+}
+// 激活菜单颜色
+.is-active {
+  background-color: #2c80c5;
+}
+.is-active:hover {
+  background-color: #2c80c5!important;
 }
 </style>
