@@ -212,16 +212,16 @@ export default {
     display: flex;
     flex-wrap: wrap;
     li {
-      height: 80px;
-      width: 80px;
+      height: 100px;
+      width: 100px;
       display: flex;
       align-items: center;
       border-radius: 2px;
       background-color: #409eff;
       cursor: pointer;
-      padding: 2px;
+      padding: 14px;
       box-sizing: border-box;
-      font-size: 14px;
+      font-size: 16px;
       margin-right: 15px;
       margin-bottom: 15px;
       box-shadow: 0px 2px 8px rgb(0 0 0 / 35%);
