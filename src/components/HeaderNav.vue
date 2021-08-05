@@ -48,17 +48,14 @@
         routerName.value = router.currentRoute.value.meta.desc;
       });
 
-      // Store
+      // Store 绑定了store 的数据智能通过 commit 进行操作
       let navList = ref(store.state.tableNameList);
       let nowTag = reactive(store.state.nowTag);
 
       watch(store.state.tableNameList,()=>{
         nowTag = navList.value.length>0?
         navList.value[navList.value.length-1].name:'/';
-      })
-
-      watch(store.state.nowTag,()=>{
-        nowTag = store.state.nowTag;
+        store.commit('changeNowTag',nowTag)
       })
 
       const deleteTableName = function(obj) {
@@ -68,7 +65,7 @@
       // 点击当前Tag
       const goPage = function(obj) {
         router.push(obj.path);
-        nowTag.name = obj.name;
+        store.commit('changeNowTag',obj.name);
       }
 
       return {

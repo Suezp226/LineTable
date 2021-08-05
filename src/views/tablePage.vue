@@ -18,6 +18,7 @@
           <el-input style="width:150px" size="small"></el-input>
         </el-form-item>
         <el-button type="primary" size="small" style="width:80px;margin-left:20px;">查询</el-button>
+        {{nowTag.name}}
       </el-form>
     </div>
     <el-table
@@ -59,12 +60,17 @@
 
 <script>
   import {onMounted,ref,reactive} from 'vue'
+  import store from '../store/store'
   export default {
     name: 'TablePage',
     props: {
 
     },
     setup(props) {
+      // Store
+      let nowTag = store.state.nowTag;
+
+
       let tableData =  [{
             date: '2016-05-02',
             name: '王小虎',
@@ -94,7 +100,8 @@
         tableData,
         handleSizeChange,
         handleCurrentChange,
-        currentPage
+        currentPage,
+        nowTag
       }
     }
   }
