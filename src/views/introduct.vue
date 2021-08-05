@@ -1,6 +1,6 @@
 <template>
   <div class="mainBox">
-    <div class="title">page1</div>
+    <div class="title">平平无奇的表格</div>
   </div>
 </template>
 
@@ -21,7 +21,7 @@ export default {
 <style lang="less" scoped>
 .mainBox {
   .title {
-    color:skyblue;
+    color:rgb(16, 26, 31);
   }
 }
 </style>

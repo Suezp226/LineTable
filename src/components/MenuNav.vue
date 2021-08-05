@@ -12,14 +12,14 @@
       :uniqueOpened="true"
       active-text-color="#fff"
       :router="true">
-      <el-menu-item index="/page1">
-        <template #title>介绍</template>
-      </el-menu-item>
-      <el-menu-item index="/page2">
-        <template #title>教程</template>
-      </el-menu-item>
       <el-menu-item index="/home">
         <template #title>首页</template>
+      </el-menu-item>
+      <el-menu-item index="/introduct">
+        <template #title>介绍</template>
+      </el-menu-item>
+      <el-menu-item index="/teachPage">
+        <template #title>教程</template>
       </el-menu-item>
       <el-menu-item index="/404">
         <template #title>404</template>
@@ -32,8 +32,8 @@
 </template>
 
 <script>
-  import {onMounted} from 'vue';
-  import {useRouter} from 'vue-router';
+  import {onMounted, watch, ref} from 'vue';
+  import {useRouter, useRoute} from 'vue-router';
   export default {
     name: 'MenuNav',
     props: {
@@ -41,9 +41,11 @@
     },
     setup(props) {
       const router = useRouter();
+      const route = useRoute();
       const go = function(url) {
         router.push(url)
       }
+      // 当前路由
 
       function handleOpen(key, keyPath) {
         console.log(key, keyPath);
@@ -62,10 +64,12 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-width: 200px;
     width: 200px;
     text-align: center;
     box-shadow: 2px 10px 5px rgb(0 0 0 / 30%);
     z-index: 11;
+    overflow: hidden;
     .titleBox {
       height: 150px;
       padding-top: 15px;

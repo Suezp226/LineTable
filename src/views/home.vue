@@ -1,24 +1,16 @@
 <template>
   <div class="mainBox">
-    <div class="title">所有表格</div>
+    <div class="title">平平无奇的表格</div>
     <ul>
-      <li>
-        <span>七周年单次套系</span>
-      </li>
-      <li>
-        <span>店内单次套系</span>
-      </li>
-      <li>
-        <span>店内单次套系</span>
-      </li>
-      <li>
-        <span>店内单次套系</span>
-      </li>
-      <li>
-        <span>店内单次套系</span>
+      <li @click="goTablePage" v-for="item in tableList" :key="item.id">
+        <div class="tableName">{{ item.name }}</div>
+        <div class="btnBox">
+          <span class="bgRed" @click.stop>删除</span>
+          <span class="bgGreen" @click.stop="openAddForm">编辑</span>
+        </div>
       </li>
       <li class="addLi" @click="openAddForm">
-        <span>+</span>
+        <div class="tableName">+</div>
       </li>
     </ul>
     <!-- 弹窗表单 -->
@@ -106,19 +98,25 @@
 
 <script>
 import { reactive, ref, onMounted, watch, getCurrentInstance } from "vue";
+import { useRouter } from "vue-router";
 import http from "../http/http";
 export default {
   name: "Home",
   props: {},
   setup(props) {
+    // 路由
+    const router = useRouter();
+    let tableList = ref([{ name: "示例", id: 1 }]);
     // 获取列表显示数据
     const queryData = function () {
-      http
-        .get("/singlePart?page=1&pageNum=12&name=&phone=&keyWord=")
-        .then((res) => {
-          // console.log(res.data,'res.data')
-        });
+      // http
+      //   .get("/singlePart?page=1&pageNum=12&name=&phone=&keyWord=")
+      //   .then((res) => {
+      //     // console.log(res.data,'res.data')
+      //   });
+      tableList.value = tableList.value.concat([{ name: "七周年", id: 2 }]);
     };
+    queryData();
 
     // 添加弹窗
     let showDialog = ref(false); // 操作ref 类型数据 要使用 .value
@@ -155,7 +153,11 @@ export default {
     };
 
     // 工具栏设置
-    let toolTags = ref(["时间搜索：取件日期", "输入框搜索：姓名", "关键字搜索：姓名+手机号+备注"]),
+    let toolTags = ref([
+        "时间搜索：取件日期",
+        "输入框搜索：姓名",
+        "关键字搜索：姓名+手机号+备注",
+      ]),
       toolInputVisible = ref(false),
       toolInputValue = ref("");
 
@@ -178,8 +180,13 @@ export default {
 
     // 确认添加表格
     const confirmAddTable = function () {
-      console.log(form.name)
-    }
+      console.log(form.name);
+    };
+
+    //跳转表格内容
+    const goTablePage = function () {
+      router.push("/tablePage");
+    };
 
     return {
       showDialog,
@@ -198,7 +205,9 @@ export default {
       toolHandleClose,
       toolShowInput,
       toolHandleInputConfirm,
-      confirmAddTable
+      confirmAddTable,
+      goTablePage,
+      tableList,
     };
   },
 };
@@ -214,38 +223,64 @@ export default {
     li {
       height: 100px;
       width: 100px;
-      display: flex;
-      align-items: center;
       border-radius: 2px;
       background-color: #409eff;
       cursor: pointer;
-      padding: 14px;
       box-sizing: border-box;
       font-size: 16px;
       margin-right: 15px;
       margin-bottom: 15px;
       box-shadow: 0px 2px 8px rgb(0 0 0 / 35%);
-      transition: all 0.2s ease-in-out 0s;
-      span {
-        display: inline-block;
+      // transition: all 0.2s ease-in-out 0s;
+      transition-property: box-shadow, transform, background-color, height;
+      transition-duration: 0.2s, 0.2s, 0.2s, 0.2s;
+      transition-timing-function: ease-in-out;
+      transition-delay: 0s, 0s, 0s, 0.4s;
+      overflow: hidden;
+      .tableName {
         width: 100%;
+        height: 100px;
+        padding: 14px;
+        box-sizing: border-box;
         text-align: center;
         color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+      .btnBox {
+        display: flex;
+        overflow: hidden;
+        height: 30px;
+        width: 100%;
+        background-color: #409eff;
+        color: rgb(226, 221, 221);
+        font-size: 13px;
+        text-align: center;
+        line-height: 30px;
+        span {
+          flex: 1;
+        }
+        span:hover {
+          color: #fff;
+        }
       }
     }
     li:hover {
       transform: translateY(-2px);
       background-color: #0b7df0;
       box-shadow: 0px 3px 8px rgb(0 0 0 / 55%);
+      height: 130px;
     }
     .addLi {
       background-color: #67c23a;
-      span {
+      .tableName {
         font-size: 30px;
       }
     }
     .addLi:hover {
       background-color: #0b7df0;
+      height: 100px;
     }
   }
 }
@@ -263,5 +298,8 @@ export default {
 .input-new-tag {
   width: 90px;
   margin-left: 10px;
+}
+.bgRed {
+  background: #f63f5a;
 }
 </style>

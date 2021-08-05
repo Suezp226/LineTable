@@ -1,6 +1,8 @@
 <template>
   <div class="mainBox">
-    <div class="title">page2</div>
+    <div class="title">
+      平平无奇的教程
+    </div>
   </div>
 </template>
 
@@ -8,7 +10,7 @@
 import { reactive, ref, onMounted, watch, getCurrentInstance  } from 'vue';
 import http from '../http/http'
 export default {
-  name: "page2",
+  name: "teachPage",
   props: {
 
   },
@@ -21,7 +23,7 @@ export default {
 <style lang="less" scoped>
 .mainBox {
   .title {
-    color:skyblue;
+    color:rgb(9, 18, 22);
   }
 }
 </style>

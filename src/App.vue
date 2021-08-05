@@ -77,4 +77,15 @@ body {
 .is-active:hover {
   background-color: #2c80c5!important;
 }
+
+// table 样式
+.el-table .cell,
+.el-table--border td:first-child .cell,
+.el-table--border th:first-child .cell,
+.el-form--inline .el-form-item__label {
+  color: #000;
+}
+.el-table th.is-leaf {
+  background-color: #c4e1f8;
+}
 </style>

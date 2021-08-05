@@ -15,18 +15,25 @@ const routes = [
     component: ()=> import('../views/home.vue')
   },
   {
-    path: '/page1',
+    path: '/introduct',
     meta: {
-      desc:'page1'
+      desc:'介绍'
     },
-    component: ()=> import('../views/page1.vue')
+    component: ()=> import('../views/introduct.vue')
   },
   {
-    path: '/page2',
+    path: '/teachPage',
     meta: {
-      desc:'page2'
+      desc:'教程'
     },
-    component: ()=> import('../views/page2.vue')
+    component: ()=> import('../views/teachPage.vue')
+  },
+  {
+    path: '/tablePage',
+    meta: {
+      desc:'应用'
+    },
+    component: ()=> import('../views/tablePage.vue')
   },
   {
     path: '/:pathMatch(.*)*',

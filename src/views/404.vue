@@ -1,6 +1,8 @@
 <template>
   <div class="mainBox">
-    <div class="title">404</div>
+    <div class="title">
+      平平无奇的 404
+    </div>
   </div>
 </template>
 
