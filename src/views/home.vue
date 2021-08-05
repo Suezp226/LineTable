@@ -2,7 +2,7 @@
   <div class="mainBox">
     <div class="title">平平无奇的表格</div>
     <ul>
-      <li @click="goTablePage" v-for="item in tableList" :key="item.id">
+      <li @click="goTablePage(item)" v-for="item in tableList" :key="item.path">
         <div class="tableName">{{ item.name }}</div>
         <div class="btnBox">
           <span class="bgRed" @click.stop>删除</span>
@@ -99,6 +99,7 @@
 <script>
 import { reactive, ref, onMounted, watch, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
+import store from "../store/store"
 import http from "../http/http";
 export default {
   name: "Home",
@@ -106,7 +107,22 @@ export default {
   setup(props) {
     // 路由
     const router = useRouter();
-    let tableList = ref([{ name: "示例", id: 1 }]);
+    let tableList = ref([{ name: "示例", path: '/tablePage' }]);
+
+    // Stroe
+    const testStore = async function(obj) {
+      let jud = true;
+      store.commit('changeNowTag',obj.name)
+      await store.state.tableNameList.forEach(ele=>{
+        if(ele.name === obj.name) {
+          jud = false;
+        }
+      });
+      if(obj && jud) {
+        store.commit('addTableName',obj);
+      }
+    }
+
     // 获取列表显示数据
     const queryData = function () {
       // http
@@ -114,7 +130,7 @@ export default {
       //   .then((res) => {
       //     // console.log(res.data,'res.data')
       //   });
-      tableList.value = tableList.value.concat([{ name: "七周年", id: 2 }]);
+      tableList.value = tableList.value.concat([{ name: "七周年", path: '/tablePage' }]);
     };
     queryData();
 
@@ -184,7 +200,8 @@ export default {
     };
 
     //跳转表格内容
-    const goTablePage = function () {
+    const goTablePage = function (item) {
+      testStore(item);
       router.push("/tablePage");
     };
 
@@ -208,6 +225,7 @@ export default {
       confirmAddTable,
       goTablePage,
       tableList,
+      testStore
     };
   },
 };
