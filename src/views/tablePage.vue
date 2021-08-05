@@ -9,15 +9,15 @@
       :highlight-current-row="true"
       >
         <el-form-item label="活动名称" v-for="item in list" :key="item">
-          <el-input style="width:150px" size="small"></el-input>
+          <el-input style="width:150px" size="medium"></el-input>
         </el-form-item>
-        <el-button type="primary" size="small" style="width:80px;margin-left:20px;">查询</el-button>
+        <el-button type="primary" size="medium" style="width:80px;margin-left:20px;">查询</el-button>
       </el-form>
     </div>
     <el-table
       :data="tableData"
       style="width: 100%;min-height:500px;"
-      size="small"
+      size="medium"
       stripe
       border>
       <el-table-column

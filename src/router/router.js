@@ -1,54 +1,59 @@
-import {createRouter, createWebHashHistory} from 'vue-router';
-const routes = [
-  {
-    path: '/',
-    meta: {
-      desc:'首页'
+import { createRouter, createWebHashHistory } from 'vue-router';
+const routes = [{
+        path: '/',
+        meta: {
+            desc: '试一试'
+        },
+        component: () =>
+            import ('../views/home.vue')
     },
-    component: ()=> import('../views/home.vue')
-  },
-  {
-    path: '/home',
-    meta: {
-      desc:'首页'
+    {
+        path: '/home',
+        meta: {
+            desc: '试一试'
+        },
+        component: () =>
+            import ('../views/home.vue')
     },
-    component: ()=> import('../views/home.vue')
-  },
-  {
-    path: '/introduct',
-    meta: {
-      desc:'介绍'
+    {
+        path: '/introduct',
+        meta: {
+            desc: '介绍'
+        },
+        component: () =>
+            import ('../views/introduct.vue')
     },
-    component: ()=> import('../views/introduct.vue')
-  },
-  {
-    path: '/teachPage',
-    meta: {
-      desc:'教程'
+    {
+        path: '/teachPage',
+        meta: {
+            desc: '教程'
+        },
+        component: () =>
+            import ('../views/teachPage.vue')
     },
-    component: ()=> import('../views/teachPage.vue')
-  },
-  {
-    path: '/tablePage',
-    meta: {
-      desc:'应用'
+    {
+        path: '/tablePage',
+        meta: {
+            desc: '应用'
+        },
+        component: () =>
+            import ('../views/tablePage.vue')
     },
-    component: ()=> import('../views/tablePage.vue')
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    meta: {
-      desc:'404'
+    {
+        path: '/:pathMatch(.*)*',
+        meta: {
+            desc: '404'
+        },
+        name: '404',
+        component: () =>
+            import ('../views/404.vue')
     },
-    name: '404',
-    component: ()=> import('../views/404.vue')
-  },
 ]
 
 const router = createRouter({
-  // 使用 hash 模式的路由
-  history: createWebHashHistory(),
-  routes
+    // 使用 hash 模式的路由
+    history: createWebHashHistory(),
+    routes
 })
 
 export default router;
