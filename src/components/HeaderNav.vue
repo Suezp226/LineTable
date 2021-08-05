@@ -93,7 +93,7 @@
       display: inline-block;
       min-width: 80px;
       margin-right: 20px;
-      cursor: pointer;
+      cursor: default;
       background: #578ed7;
       text-align: center;
       color: #fff;

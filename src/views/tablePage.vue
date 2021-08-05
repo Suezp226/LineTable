@@ -8,17 +8,10 @@
       style="margin-bottom:-20px;"
       :highlight-current-row="true"
       >
-        <el-form-item label="活动名称" >
-          <el-input style="width:150px" size="small"></el-input>
-        </el-form-item>
-        <el-form-item label="活动区域">
-          <el-input style="width:150px" size="small"></el-input>
-        </el-form-item>
-        <el-form-item label="关键字">
+        <el-form-item label="活动名称" v-for="item in list" :key="item">
           <el-input style="width:150px" size="small"></el-input>
         </el-form-item>
         <el-button type="primary" size="small" style="width:80px;margin-left:20px;">查询</el-button>
-        {{nowTag.name}}
       </el-form>
     </div>
     <el-table
@@ -59,7 +52,7 @@
 </template>
 
 <script>
-  import {onMounted,ref,reactive} from 'vue'
+  import {onMounted,ref,reactive, watch} from 'vue'
   import store from '../store/store'
   export default {
     name: 'TablePage',
@@ -69,6 +62,21 @@
     setup(props) {
       // Store
       let nowTag = store.state.nowTag;
+      let list = ref([]);
+      if(nowTag.name == '示例') {
+          list.value = [1,2,3,4];
+        } else {
+          list.value = [1,23];
+        }
+
+      
+      watch(store.state.nowTag,()=>{
+        if(nowTag.name == '示例') {
+          list.value = [1,2,3,4];
+        } else {
+          list.value = [1,2];
+        }
+      })
 
 
       let tableData =  [{
@@ -101,7 +109,8 @@
         handleSizeChange,
         handleCurrentChange,
         currentPage,
-        nowTag
+        nowTag,
+        list
       }
     }
   }
