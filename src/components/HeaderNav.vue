@@ -1,9 +1,17 @@
 <template>
   <div class="header">
-    <span class="routerName" @click="goPage">{{routerName}}</span>
-    <!-- <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/page1' }">应用</el-breadcrumb-item>
-    </el-breadcrumb> -->
+    <span class="routerName">{{routerName}}</span>
+    <el-tag
+      v-for="item in navList"
+      :key="item.path"
+      style="margin-right:10px;cursor:pointer;"
+      effect="dark"
+      :type="nowTag.name == item.name?'success':''"
+      closable
+      @close="deleteTableName(item)"
+      @click="goPage(item)">
+      {{item.name}}
+    </el-tag>
     <div class="usePowerBox">
       <ul>
         <li>
@@ -23,12 +31,14 @@
 <script>
   import {onMounted, watch, ref, reactive } from 'vue';
   import {useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
+  import store from "../store/store"
   export default {
     name: 'HeaderNav',
     props: {
 
     },
-    setup(props) {
+    setup(props,{emit}) {
+
       // 路由面包屑 处理
       const route = useRoute();
       const router = useRouter();
@@ -38,15 +48,35 @@
         routerName.value = router.currentRoute.value.meta.desc;
       });
 
-      // 点击展示路由
-      const goPage = function() {
-        router.push(routerName)
-      }
+      // Store
+      let navList = ref(store.state.tableNameList);
+      let nowTag = reactive(store.state.nowTag);
 
+      watch(store.state.tableNameList,()=>{
+        nowTag = navList.value.length>0?
+        navList.value[navList.value.length-1].name:'/';
+      })
+
+      watch(store.state.nowTag,()=>{
+        nowTag = store.state.nowTag;
+      })
+
+      const deleteTableName = function(obj) {
+        store.commit('deleteTableName',obj);
+        router.go(-1);
+      }
+      // 点击当前Tag
+      const goPage = function(obj) {
+        router.push(obj.path);
+        nowTag.name = obj.name;
+      }
 
       return {
         routerName,
-        goPage
+        goPage,
+        navList,
+        nowTag,
+        deleteTableName,
       }
     }
   }

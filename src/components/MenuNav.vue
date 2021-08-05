@@ -43,7 +43,7 @@
       const router = useRouter();
       const route = useRoute();
       const go = function(url) {
-        router.push(url)
+        router.push(url);
       }
       // 当前路由
 

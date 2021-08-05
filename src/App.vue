@@ -88,4 +88,8 @@ body {
 .el-table th.is-leaf {
   background-color: #c4e1f8;
 }
+
+.el-tag {
+  border-radius: 0px!important;
+}
 </style>
