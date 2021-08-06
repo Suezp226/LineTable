@@ -13,7 +13,7 @@
       active-text-color="#fff"
       :router="true">
       <el-menu-item index="/home">
-        <template #title>首页</template>
+        <template #title>试一试</template>
       </el-menu-item>
       <el-menu-item index="/introduct">
         <template #title>介绍</template>

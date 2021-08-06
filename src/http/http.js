@@ -4,7 +4,7 @@ const http = axios;
 
 http.interceptors.request.use(req=>{
   // console.log(req,'请求拦截');
-  req.url = "https:suezp.cn/server" + req.url;
+  req.url = "http://127.0.0.1:1113" + req.url;
   return req
 })
 

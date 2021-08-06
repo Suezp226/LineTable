@@ -15,73 +15,119 @@
     </ul>
     <!-- 弹窗表单 -->
     <el-dialog title="表格内容填写" v-model="showDialog" top="12vh">
-      <el-form :model="form" :label-width="84" label-position="left">
+      <el-form :model="form" :label-width="84" label-position="left" @click="inputVisible=false;toolInputVisible=false">
         <el-form-item label="表格名称">
           <el-input
             v-model="form.name"
             size="small"
             style="width: 300px"
+            placeholder="请输入表格名称(禁止重复)"
           ></el-input>
         </el-form-item>
         <el-divider />
+
         <el-form-item label="表格数据项">
-          <el-tag
-            :key="tag"
-            v-for="tag in dynamicTags"
-            closable
-            :disable-transitions="false"
-            @close="handleClose(tag)"
-          >
-            {{ tag }}
-          </el-tag>
-          <el-input
-            class="input-new-tag"
-            v-if="inputVisible"
-            v-model="inputValue"
-            placeholder="回车确定"
-            ref="saveTagInput"
-            size="small"
-            @keyup.enter="handleInputConfirm"
-            @blur="handleInputConfirm"
-          >
-          </el-input>
-          <el-button
-            v-else
-            class="button-new-tag"
-            size="small"
-            @click="showInput"
-            >+ New Tag</el-button
-          >
+          <div class="tagBox">
+            <el-tag
+              :key="tag"
+              v-for="tag in dynamicTags"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(tag)"
+            >
+              {{ tag }}
+            </el-tag>
+            <el-input
+              class="input-new-tag"
+              v-if="inputVisible"
+              v-model="inputValue"
+              placeholder="回车确定"
+              ref="saveTagInput"
+              size="small"
+              @click.stop
+              @keyup.enter="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+            <el-button
+              v-else
+              class="button-new-tag"
+              size="small"
+              @click.stop="showInput"
+              >+ New Tag</el-button
+            >
+          </div>
         </el-form-item>
         <el-divider />
+
         <el-form-item label="工具栏">
-          <el-tag
-            :key="tag"
-            v-for="tag in toolTags"
-            closable
-            :disable-transitions="false"
-            @close="toolHandleClose(tag)"
-          >
-            {{ tag }}
-          </el-tag>
-          <el-input
-            class="input-new-tag"
-            v-if="toolInputVisible"
-            v-model="toolInputValue"
-            placeholder="回车确定"
-            ref="saveTagInput"
-            size="small"
-            @keyup.enter="toolHandleInputConfirm"
-            @blur="toolHandleInputConfirm"
-          >
-          </el-input>
-          <el-button
-            v-else
-            class="button-new-tag"
-            size="small"
-            @click="toolShowInput"
-            >+ New Tool Tag</el-button
-          >
+          <div>
+            <span class="subTips">关键字选项</span>
+            <el-checkbox-group v-model="form.keywordsList" style="display:inline-block;">
+              <el-checkbox v-for="item in dynamicTags" :key="item" :label="item"></el-checkbox>
+            </el-checkbox-group>
+          </div>
+          <el-divider style="margin:10px 0;" />
+          <span class="subTips">其他选项</span>
+          <div class="tagBox">
+            <el-tag
+              :key="item.tag"
+              v-for="item in toolTags"
+              closable
+              :disable-transitions="false"
+              @close="toolHandleClose(item)"
+            >
+              {{ options[(item.type*1) -1].label + ':' + item.tag }}
+            </el-tag>
+          <!-- 其他工具栏选项 -->
+            <!-- 占位按钮 无功能 -->
+            <el-button
+              v-if="toolInputVisible"
+              style="opacity:0;" 
+              class="button-new-tag"
+              size="small"
+              disabled
+              ></el-button>
+            <div class="addToolBox" v-if="toolInputVisible">
+              <el-select
+                v-model="nowTool.tag"
+                style="width: 100%"
+                size="small"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in dynamicTags"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                >
+                </el-option>
+              </el-select>
+              <el-select
+                v-model="nowTool.type"
+                style="width: 100%"
+                size="small"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+              <el-button style="width:100%" @click="toolHandleInputConfirm" size="small" type="primary">确定</el-button>
+            </div>
+            <el-button
+              v-else
+              class="button-new-tag"
+              size="small"
+              :autofocus="true"
+              @click.stop="toolShowInput($event)"
+              >+ New Tool Tag</el-button
+            >
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -99,7 +145,7 @@
 <script>
 import { reactive, ref, onMounted, watch, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
-import store from "../store/store"
+import store from "../store/store";
 import http from "../http/http";
 export default {
   name: "Home",
@@ -107,30 +153,28 @@ export default {
   setup(props) {
     // 路由
     const router = useRouter();
-    let tableList = ref([{ name: "示例", path: '/tablePage' }]);
+    let tableList = ref([{ name: "示例", path: "/tablePage" }]);
 
     // Stroe
-    const testStore = async function(obj) {
+    const testStore = async function (obj) {
       let jud = true;
-      store.commit('changeNowTag',obj.name)
-      await store.state.tableNameList.forEach(ele=>{
-        if(ele.name === obj.name) {
+      store.commit("changeNowTag", obj.name);
+      await store.state.tableNameList.forEach((ele) => {
+        if (ele.name === obj.name) {
           jud = false;
         }
       });
-      if(obj && jud) {
-        store.commit('addTableName',obj);
+      if (obj && jud) {
+        store.commit("addTableName", obj);
       }
-    }
+    };
 
     // 获取列表显示数据
     const queryData = function () {
-      // http
-      //   .get("/singlePart?page=1&pageNum=12&name=&phone=&keyWord=")
-      //   .then((res) => {
-      //     // console.log(res.data,'res.data')
-      //   });
-      tableList.value = tableList.value.concat([{ name: "七周年", path: '/tablePage' }]);
+      http.get("/table").then((res) => {
+          console.log(res.data,'获取列表')
+          tableList.value = tableList.value.concat(res.data.list);
+      })
     };
     queryData();
 
@@ -143,11 +187,13 @@ export default {
     // 添加表单数据内容
     let form = reactive({
       name: "",
-      region: "",
+      tableTags: [],
+      toolTags: [],
+      keywordsList: []
     });
 
     // 列表项设置
-    let dynamicTags = ref(["标签一", "标签二", "标签三"]),
+    let dynamicTags = ref([]),
       inputVisible = ref(false),
       inputValue = ref("");
 
@@ -169,34 +215,37 @@ export default {
     };
 
     // 工具栏设置
-    let toolTags = ref([
-        "时间搜索：取件日期",
-        "输入框搜索：姓名",
-        "关键字搜索：姓名+手机号+备注",
-      ]),
-      toolInputVisible = ref(false),
-      toolInputValue = ref("");
+      // 当前新增的工具选择框
+    let nowTool = reactive({tag:'',type:'1'});
+    let toolTags = ref([]),
+      toolInputVisible = ref(false);
 
     const toolHandleClose = function (tag) {
       toolTags.value.splice(toolTags.value.indexOf(tag.value), 1);
     };
 
-    const toolShowInput = function () {
+    const toolShowInput = function (event) {
+      console.log(event)
       toolInputVisible.value = true;
     };
 
+    // 工具栏确认
     const toolHandleInputConfirm = function () {
-      let oldValue = toolInputValue;
-      if (oldValue.value) {
-        toolTags.value.push(oldValue.value);
+      if (nowTool.tag && nowTool.type) {
+        toolTags.value.push({...nowTool});
       }
       toolInputVisible.value = false;
-      toolInputValue.value = "";
+      nowTool.tag = '';
     };
 
     // 确认添加表格
     const confirmAddTable = function () {
-      console.log(form.name);
+      form.tableTags = dynamicTags;
+      form.toolTags = toolTags;
+      console.log(form);
+      http.post("/table/addTable",form).then((res) => {
+        console.log('添加表格',res.data)
+      });
     };
 
     //跳转表格内容
@@ -213,7 +262,6 @@ export default {
       inputValue,
       toolTags,
       toolInputVisible,
-      toolInputValue,
       queryData,
       openAddForm,
       handleClose,
@@ -225,7 +273,22 @@ export default {
       confirmAddTable,
       goTablePage,
       tableList,
-      testStore
+      testStore,
+      options: [
+        {
+          value: "1",
+          label: "普通文字",
+        },
+        {
+          value: "2",
+          label: "时间选择器",
+        },
+        {
+          value: "3",
+          label: "下拉框选择",
+        },
+      ],
+      nowTool
     };
   },
 };
@@ -302,20 +365,42 @@ export default {
     }
   }
 }
-
-.el-tag + .el-tag {
-  margin-left: 10px;
+.tagBox {
+  display: inline-block;
+  position:relative;
+  padding-top:5px;
+}
+.addToolBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150px;
+  display: inline-block;
+  padding: 5px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0px 1px 5px #0000007c;
+}
+.subTips{
+  display: inline-block;
+  width: 80px;
+  margin-right: 10px;
+  vertical-align: top;
+}
+.el-tag {
+  margin-right: 10px;
+  vertical-align: top;
 }
 .button-new-tag {
-  margin-left: 10px;
+  vertical-align: top;
   height: 32px;
   line-height: 30px;
   padding-top: 0;
   padding-bottom: 0;
 }
 .input-new-tag {
+  vertical-align: top;
   width: 90px;
-  margin-left: 10px;
 }
 .bgRed {
   background: #f63f5a;
