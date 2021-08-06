@@ -118,7 +118,7 @@
 <style lang="less" scoped>
   .toolBox {
     border: 1px solid #42bfac;
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 10px 0;
     margin-bottom: 20px;
   }

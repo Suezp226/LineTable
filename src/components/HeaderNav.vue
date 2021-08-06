@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <span class="routerName">{{routerName}}</span>
+    <span class="routerName" @click="goBack">返回</span>
     <el-tag
       v-for="item in navList"
       :key="item.path"
@@ -46,6 +46,9 @@
       routerName.value = router.currentRoute.value.meta.desc;
       watch(() => route.path,() => {
         routerName.value = router.currentRoute.value.meta.desc;
+        if(routerName.value != '应用') {
+          store.commit('changeNowTag','')
+        }
       });
 
       // Store 绑定了store 的数据智能通过 commit 进行操作
@@ -60,6 +63,10 @@
 
       const deleteTableName = function(obj) {
         store.commit('deleteTableName',obj);
+        if(store.state.tableNameList.length === 0) {
+          router.push('/home');
+          return
+        }
         router.go(-1);
       }
       // 点击当前Tag
@@ -68,12 +75,18 @@
         store.commit('changeNowTag',obj.name);
       }
 
+      // 返回 
+      const goBack = function() {
+        router.go(-1);
+      }
+
       return {
         routerName,
         goPage,
         navList,
         nowTag,
         deleteTableName,
+        goBack
       }
     }
   }
@@ -91,13 +104,21 @@
     box-shadow: 5px 1px 6px rgb(0 0 0 / 35%);
     .routerName {
       display: inline-block;
-      min-width: 80px;
+      min-width: 60px;
+      height: 40px;
       margin-right: 20px;
-      cursor: default;
+      cursor: pointer;
       background: #578ed7;
+      line-height: 40px;
       text-align: center;
+      border-radius: 40px 0;
       color: #fff;
-      padding: 0 10px;
+      font-size: 15px;
+      padding: 0 8px;
+    }
+    .routerName:hover {
+      animation: jump .8s ease-in-out 0s infinite alternate;
+      background-color: #576dd7;
     }
     .usePowerBox {
       flex: 1;
@@ -127,6 +148,17 @@
           background: rgb(211, 204, 204);
         }
       }
+    }
+  }
+  @keyframes jump {
+    0% {
+      line-height: 42px;
+    }
+    50% {
+      line-height: 38px;
+    }
+    100% {
+      line-height: 40px;
     }
   }
 </style>
