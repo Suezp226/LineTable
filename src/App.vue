@@ -86,7 +86,7 @@ body {
   color: #000;
 }
 .el-table th.is-leaf {
-  background-color: #54b2ff69;
+  background-color: #3ba7ff93;
 }
 
 .el-tag {

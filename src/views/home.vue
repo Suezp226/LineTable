@@ -27,86 +27,107 @@
         <el-divider />
 
         <el-form-item label="表格数据项">
-          <el-tag
-            :key="tag"
-            v-for="tag in dynamicTags"
-            closable
-            :disable-transitions="false"
-            @close="handleClose(tag)"
-          >
-            {{ tag }}
-          </el-tag>
-          <el-input
-            class="input-new-tag"
-            v-if="inputVisible"
-            v-model="inputValue"
-            placeholder="回车确定"
-            ref="saveTagInput"
-            size="small"
-            @click.stop
-            @keyup.enter="handleInputConfirm"
-            @blur="handleInputConfirm"
-          >
-          </el-input>
-          <el-button
-            v-else
-            class="button-new-tag"
-            size="small"
-            @click.stop="showInput"
-            >+ New Tag</el-button
-          >
+          <div class="tagBox">
+            <el-tag
+              :key="tag"
+              v-for="tag in dynamicTags"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(tag)"
+            >
+              {{ tag }}
+            </el-tag>
+            <el-input
+              class="input-new-tag"
+              v-if="inputVisible"
+              v-model="inputValue"
+              placeholder="回车确定"
+              ref="saveTagInput"
+              size="small"
+              @click.stop
+              @keyup.enter="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+            <el-button
+              v-else
+              class="button-new-tag"
+              size="small"
+              @click.stop="showInput"
+              >+ New Tag</el-button
+            >
+          </div>
         </el-form-item>
         <el-divider />
 
         <el-form-item label="工具栏">
-          <el-tag
-            :key="item.tag"
-            v-for="item in toolTags"
-            closable
-            :disable-transitions="false"
-            @close="toolHandleClose(item)"
-          >
-            {{ options[(item.type*1) -1].label + ':' + item.tag }}
-          </el-tag>
-          <div class="addToolBox" v-if="toolInputVisible">
-            <el-select
-              v-model="nowTool.tag"
-              style="width: 100%"
-              size="small"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in dynamicTags"
-                :key="item"
-                :label="item"
-                :value="item"
-              >
-              </el-option>
-            </el-select>
-            <el-select
-              v-model="nowTool.type"
-              style="width: 100%"
-              size="small"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-            <el-button style="width:100%" @click="toolHandleInputConfirm" size="small" type="primary">确定</el-button>
+          <div>
+            <span class="subTips">关键字选项</span>
+            <el-checkbox-group v-model="form.keywordsList" style="display:inline-block;">
+              <el-checkbox v-for="item in dynamicTags" :key="item" :label="item"></el-checkbox>
+            </el-checkbox-group>
           </div>
-          <el-button
-            v-else
-            class="button-new-tag"
-            size="small"
-            :autofocus="true"
-            @click.stop="toolShowInput"
-            >+ New Tool Tag</el-button
-          >
+          <el-divider style="margin:10px 0;" />
+          <span class="subTips">其他选项</span>
+          <div class="tagBox">
+            <el-tag
+              :key="item.tag"
+              v-for="item in toolTags"
+              closable
+              :disable-transitions="false"
+              @close="toolHandleClose(item)"
+            >
+              {{ options[(item.type*1) -1].label + ':' + item.tag }}
+            </el-tag>
+          <!-- 其他工具栏选项 -->
+            <!-- 占位按钮 无功能 -->
+            <el-button
+              v-if="toolInputVisible"
+              style="opacity:0;" 
+              class="button-new-tag"
+              size="small"
+              disabled
+              ></el-button>
+            <div class="addToolBox" v-if="toolInputVisible">
+              <el-select
+                v-model="nowTool.tag"
+                style="width: 100%"
+                size="small"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in dynamicTags"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                >
+                </el-option>
+              </el-select>
+              <el-select
+                v-model="nowTool.type"
+                style="width: 100%"
+                size="small"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+              <el-button style="width:100%" @click="toolHandleInputConfirm" size="small" type="primary">确定</el-button>
+            </div>
+            <el-button
+              v-else
+              class="button-new-tag"
+              size="small"
+              :autofocus="true"
+              @click.stop="toolShowInput($event)"
+              >+ New Tool Tag</el-button
+            >
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -150,14 +171,10 @@ export default {
 
     // 获取列表显示数据
     const queryData = function () {
-      // http
-      //   .get("/singlePart?page=1&pageNum=12&name=&phone=&keyWord=")
-      //   .then((res) => {
-      //     // console.log(res.data,'res.data')
-      //   });
-      tableList.value = tableList.value.concat([
-        { name: "七周年", path: "/tablePage" },
-      ]);
+      http.get("/table").then((res) => {
+          console.log(res.data,'获取列表')
+          tableList.value = tableList.value.concat(res.data.list);
+      })
     };
     queryData();
 
@@ -172,6 +189,7 @@ export default {
       name: "",
       tableTags: [],
       toolTags: [],
+      keywordsList: []
     });
 
     // 列表项设置
@@ -206,14 +224,15 @@ export default {
       toolTags.value.splice(toolTags.value.indexOf(tag.value), 1);
     };
 
-    const toolShowInput = function () {
+    const toolShowInput = function (event) {
+      console.log(event)
       toolInputVisible.value = true;
     };
 
+    // 工具栏确认
     const toolHandleInputConfirm = function () {
       if (nowTool.tag && nowTool.type) {
         toolTags.value.push({...nowTool});
-        console.log(toolTags.value)
       }
       toolInputVisible.value = false;
       nowTool.tag = '';
@@ -224,6 +243,9 @@ export default {
       form.tableTags = dynamicTags;
       form.toolTags = toolTags;
       console.log(form);
+      http.post("/table/addTable",form).then((res) => {
+        console.log('添加表格',res.data)
+      });
     };
 
     //跳转表格内容
@@ -343,14 +365,28 @@ export default {
     }
   }
 }
-
+.tagBox {
+  display: inline-block;
+  position:relative;
+  padding-top:5px;
+}
 .addToolBox {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 150px;
   display: inline-block;
   padding: 5px;
-  border: 1px solid black;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0px 1px 5px #0000007c;
 }
-
+.subTips{
+  display: inline-block;
+  width: 80px;
+  margin-right: 10px;
+  vertical-align: top;
+}
 .el-tag {
   margin-right: 10px;
   vertical-align: top;
