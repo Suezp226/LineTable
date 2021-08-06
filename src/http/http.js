@@ -1,10 +1,20 @@
 import axios from 'axios';
 
+
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.transformRequest = [function (data) {
+  let ret = ''
+  for (let it in data) {
+    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+  }
+  return ret
+}]
+
 const http = axios;
 
 http.interceptors.request.use(req=>{
   // console.log(req,'请求拦截');
-  req.url = "http://127.0.0.1:1113" + req.url;
+  // req.url = "http://127.0.0.1:1113" + req.url;
   return req
 })
 

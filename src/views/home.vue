@@ -144,6 +144,7 @@
 
 <script>
 import { reactive, ref, onMounted, watch, getCurrentInstance } from "vue";
+import sha256 from 'crypto-js/sha256';
 import { useRouter } from "vue-router";
 import store from "../store/store";
 import http from "../http/http";
@@ -176,7 +177,28 @@ export default {
           tableList.value = tableList.value.concat(res.data.list);
       })
     };
-    queryData();
+    // queryData();
+
+    // 文本翻译接口
+    const getEnglishName = function(str) {
+      // sign=sha256(应用ID+input+salt+curtime+应用密钥)
+      let curtime = (new Date().valueOf() / 1000).toFixed();
+      let sign = sha256('5fd9ea2e1046dcbb七周年客户71262dc5-1812-4586-8cfb-331b25518bd1'+curtime +'FrtE3J8jNoAn6jvtjlRkXMEeUC1P8uKY').toString();
+      let param = {
+        q: '七周年客户',
+        from: 'auto',
+        to: 'auto',
+        salt: '71262dc5-1812-4586-8cfb-331b25518bd1',  // UUID
+        appKey: '5fd9ea2e1046dcbb',  // 应用ID
+        signType: 'v3',
+        sign:sign,
+        curtime: curtime
+      }
+      http.post('/youda',param).then(res=>{
+        console.log(res.data,'翻译')
+      })
+    }
+    getEnglishName();
 
     // 添加弹窗
     let showDialog = ref(false); // 操作ref 类型数据 要使用 .value
@@ -225,7 +247,7 @@ export default {
     };
 
     const toolShowInput = function (event) {
-      console.log(event)
+      // console.log(event)
       toolInputVisible.value = true;
     };
 
