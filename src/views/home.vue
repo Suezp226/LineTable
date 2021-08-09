@@ -6,7 +6,7 @@
         <div class="tableName">{{ item.name }}</div>
         <div class="btnBox">
           <span class="bgRed" @click.stop>删除</span>
-          <span class="bgGreen" @click.stop="openAddForm">编辑</span>
+          <span class="bgGreen" @click.stop="openEditForm(item)">编辑</span>
         </div>
       </li>
       <li class="addLi" @click="openAddForm">
@@ -35,7 +35,7 @@
               :disable-transitions="false"
               @close="handleClose(tag)"
             >
-              {{ tag }}
+              {{ tag.value }}
             </el-tag>
             <el-input
               class="input-new-tag"
@@ -62,13 +62,14 @@
 
         <el-form-item label="工具栏">
           <div>
-            <span class="subTips">关键字选项</span>
+            <span class="subTips">关键字搜索</span>
             <el-checkbox-group v-model="form.keywordsList" style="display:inline-block;">
-              <el-checkbox v-for="item in dynamicTags" :key="item" :label="item"></el-checkbox>
+              <el-checkbox v-for="item in dynamicTags" :key="item.key"  :label="item.key">{{item.value}}</el-checkbox>
             </el-checkbox-group>
           </div>
           <el-divider style="margin:10px 0;" />
-          <span class="subTips">其他选项</span>
+          <!-- 其他工具栏选项 -->
+          <span class="subTips">其他搜索</span>
           <div class="tagBox">
             <el-tag
               :key="item.tag"
@@ -77,9 +78,8 @@
               :disable-transitions="false"
               @close="toolHandleClose(item)"
             >
-              {{ options[(item.type*1) -1].label + ':' + item.tag }}
+              {{ options[(item.type*1) -1].label + ':' + item.value }}
             </el-tag>
-          <!-- 其他工具栏选项 -->
             <!-- 占位按钮 无功能 -->
             <el-button
               v-if="toolInputVisible"
@@ -97,8 +97,8 @@
               >
                 <el-option
                   v-for="item in dynamicTags"
-                  :key="item"
-                  :label="item"
+                  :key="item.value"
+                  :label="item.value"
                   :value="item"
                 >
                 </el-option>
@@ -117,7 +117,8 @@
                 >
                 </el-option>
               </el-select>
-              <el-button style="width:100%" @click="toolHandleInputConfirm" size="small" type="primary">确定</el-button>
+              <el-button style="width:46%" @click="toolHandleInputClose" size="small">取消</el-button>
+              <el-button style="width:46%" @click="toolHandleInputConfirm" size="small" type="primary">确定</el-button>
             </div>
             <el-button
               v-else
@@ -133,7 +134,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="showDialog = false">取 消</el-button>
-          <el-button type="primary" @click="confirmAddTable"
+          <el-button type="primary" :loading="addBtnLoading" @click="confirmDone"
             >确定添加</el-button
           >
         </span>
@@ -148,13 +149,14 @@ import sha256 from 'crypto-js/sha256';
 import { useRouter } from "vue-router";
 import store from "../store/store";
 import http from "../http/http";
+import { ElMessage } from 'element-plus'
 export default {
   name: "Home",
   props: {},
   setup(props) {
     // 路由
     const router = useRouter();
-    let tableList = ref([{ name: "示例", path: "/tablePage" }]);
+    let tableList = ref([]);
 
     // Stroe
     const testStore = async function (obj) {
@@ -177,50 +179,27 @@ export default {
           tableList.value = tableList.value.concat(res.data.list);
       })
     };
-    // queryData();
+    queryData();
 
-    // 文本翻译接口
-    const getEnglishName = function(str) {
-      // sign=sha256(应用ID+input+salt+curtime+应用密钥)
-      let curtime = (new Date().valueOf() / 1000).toFixed();
-      let sign = sha256('5fd9ea2e1046dcbb七周年客户71262dc5-1812-4586-8cfb-331b25518bd1'+curtime +'FrtE3J8jNoAn6jvtjlRkXMEeUC1P8uKY').toString();
-      let param = {
-        q: '七周年客户',
-        from: 'auto',
-        to: 'auto',
-        salt: '71262dc5-1812-4586-8cfb-331b25518bd1',  // UUID
-        appKey: '5fd9ea2e1046dcbb',  // 应用ID
-        signType: 'v3',
-        sign:sign,
-        curtime: curtime
-      }
-      http.post('/youda',param).then(res=>{
-        console.log(res.data,'翻译')
-      })
-    }
-    getEnglishName();
 
-    // 添加弹窗
-    let showDialog = ref(false); // 操作ref 类型数据 要使用 .value
-    const openAddForm = function () {
-      showDialog.value = true;
-    };
 
     // 添加表单数据内容
+    let addBtnLoading = ref(false); // 添加按钮loading
     let form = reactive({
       name: "",
       tableTags: [],
       toolTags: [],
-      keywordsList: []
+      keywordsList: []  // 保存的为 列表项的 key 值
     });
 
-    // 列表项设置
+    // 列表项设置参数
     let dynamicTags = ref([]),
       inputVisible = ref(false),
       inputValue = ref("");
 
     const handleClose = function (tag) {
-      dynamicTags.value.splice(dynamicTags.value.indexOf(tag.value), 1);
+      dynamicTags.value.indexOf(tag)==-1?'':dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
+      form.keywordsList.indexOf(tag.key)==-1?'':form.keywordsList.splice(form.keywordsList.indexOf(tag.key),1)
     };
 
     const showInput = function () {
@@ -228,9 +207,10 @@ export default {
     };
 
     const handleInputConfirm = function () {
+      let beforeKey = dynamicTags.value.length>0?(dynamicTags.value[dynamicTags.value.length-1].key.split('_')[1]): 0;
       let oldValue = inputValue;
       if (oldValue.value) {
-        dynamicTags.value.push(oldValue.value);
+        dynamicTags.value.push({value:oldValue.value,key:'perKey_' + (+beforeKey+1)});
       }
       inputVisible.value = false;
       inputValue.value = "";
@@ -238,42 +218,129 @@ export default {
 
     // 工具栏设置
       // 当前新增的工具选择框
-    let nowTool = reactive({tag:'',type:'1'});
+    let nowTool = reactive({tag:null,type:'1'});
     let toolTags = ref([]),
       toolInputVisible = ref(false);
 
     const toolHandleClose = function (tag) {
-      toolTags.value.splice(toolTags.value.indexOf(tag.value), 1);
+      toolTags.value.indexOf({...nowTool.tag,type:nowTool.type})==-1?'':
+      toolTags.value.splice(toolTags.value.indexOf(tag), 1);
     };
 
     const toolShowInput = function (event) {
-      // console.log(event)
       toolInputVisible.value = true;
     };
 
     // 工具栏确认
     const toolHandleInputConfirm = function () {
+      console.log(nowTool)
       if (nowTool.tag && nowTool.type) {
-        toolTags.value.push({...nowTool});
+        toolTags.value.push({...nowTool.tag,type:nowTool.type});
       }
       toolInputVisible.value = false;
-      nowTool.tag = '';
+      nowTool.tag = null;
+    };
+
+    //  工具栏取消
+    const toolHandleInputClose = function () {
+      toolInputVisible.value = false;
+      nowTool.tag = null;
+    };
+
+    // 弹窗相关参数
+    let showDialog = ref(false); // 操作ref 类型数据 要使用 .value
+    let doneType = ref('add');  // 判断当前操作类型
+
+    // 点击编辑表格
+    const openEditForm = function(item) {
+      console.log(item);
+      toolHandleInputClose();
+      doneType.value = 'edit';
+      this.showDialog = true;
+      let {name,tableTags,keywordsList,_id} = item;
+      dynamicTags.value = tableTags;
+      toolTags.value = item.toolTags;
+
+      form.name = name;
+      form.tableTags = tableTags;
+      form.toolTags = item.toolTags;
+      form.keywordsList = keywordsList;
+      form._id = _id;
+    }
+
+    // 点击新增表格
+    const openAddForm = function () {
+      toolHandleInputClose();
+      doneType.value = 'add';
+      form.name = '';
+      form.tableTags = [];
+      form.toolTags = [];
+      form.keywordsList = [];
+      delete form._id;
+
+      dynamicTags.value = [];
+      toolTags.value = [];
+      showDialog.value = true;
     };
 
     // 确认添加表格
     const confirmAddTable = function () {
-      form.tableTags = dynamicTags;
-      form.toolTags = toolTags;
-      console.log(form);
+      form.toolTags = toolTags.value;     // 工具栏项
+      form.tableTags = dynamicTags.value; //数据项
+      addBtnLoading.value = true;
+      console.log(form,'form')
       http.post("/table/addTable",form).then((res) => {
+        showDialog.value = false;
+        addBtnLoading.value = false;
+        tableList.value = [];
+        queryData();
         console.log('添加表格',res.data)
       });
     };
 
+    // 确定编辑表格
+    const confirmEditTable = function() {
+      form.toolTags = toolTags.value;     // 工具栏项
+      form.tableTags = dynamicTags.value; //数据项
+      addBtnLoading.value = true;
+      console.log(form,'form编辑')
+      http.post("/table/editTable",form).then((res) => {
+        showDialog.value = false;
+        addBtnLoading.value = false;
+        tableList.value = [];
+        queryData();
+        console.log('编辑表格',res.data)
+      });
+    }
+
+    // 点击确定按钮
+    const confirmDone = function() {
+      // 校验数据  表明 数据项 搜索条件  关键字包含
+
+      if(form.name.trim() == '') {
+        ElMessage.warning({
+          message: '请填写表名称',
+          type: 'warning'
+        });
+        return
+      }
+
+      console.log(doneType);
+      if( doneType.value == 'add') {
+        confirmAddTable();
+      } else {
+        confirmEditTable();
+      }
+    }
+
+
     //跳转表格内容
     const goTablePage = function (item) {
       testStore(item);
-      router.push("/tablePage");
+      router.push({
+        path:"/tablePage",
+        query: {id:item._id}
+      });
     };
 
     return {
@@ -286,13 +353,16 @@ export default {
       toolInputVisible,
       queryData,
       openAddForm,
+      openEditForm,
       handleClose,
       showInput,
       handleInputConfirm,
       toolHandleClose,
       toolShowInput,
       toolHandleInputConfirm,
+      toolHandleInputClose,
       confirmAddTable,
+      confirmDone,
       goTablePage,
       tableList,
       testStore,
@@ -310,7 +380,9 @@ export default {
           label: "下拉框选择",
         },
       ],
-      nowTool
+      nowTool,
+      addBtnLoading,
+      doneType
     };
   },
 };
