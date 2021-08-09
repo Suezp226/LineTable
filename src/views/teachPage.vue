@@ -23,7 +23,7 @@ export default {
 <style lang="less" scoped>
 .mainBox {
   .title {
-    color:rgb(9, 18, 22);
+    color:#fff;
   }
 }
 </style>

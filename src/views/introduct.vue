@@ -19,7 +19,7 @@ export default {
 <style lang="less" scoped>
 .mainBox {
   .title {
-    color: rgb(16, 26, 31);
+    color: #fff;
   }
 }
 </style>

@@ -7,6 +7,7 @@
       inline 
       style="margin-bottom:-20px;min-height:58px;"
       :highlight-current-row="true"
+      :ref="dom"
       >
       <!-- 工具栏 type 1-输入框  2- 时间选择器 3-selector -->
         <el-form-item :label="item.value" v-for="(item) in renderTableInfo.toolTags" :key="item">
@@ -69,7 +70,7 @@
 </template>
 
 <script>
-  import {onMounted,ref,reactive, watch} from 'vue';
+  import {onMounted,ref,reactive, watch, nextTick} from 'vue';
   import {useRoute} from 'vue-router';
   import store from '../store/store';
   import http from "../http/http";
@@ -79,6 +80,17 @@
 
     },
     setup(props) {
+
+      let refs = '';
+ 
+     const dom = el => {
+       refs= el;
+     }
+
+      nextTick(() => {
+       console.log(refs);
+     })
+
       let route = useRoute();
       let renderTableInfo = reactive({
           name: "",
@@ -89,10 +101,11 @@
       let doF = ref(false);
       // 获取列表显示数据
       const queryData = function () {
+        renderTableInfo.tableTags = [];
+        renderTableInfo.toolTags = [];
         http.get("/table?"+'_id='+route.query.id).then((res) => {
             renderTableInfo.tableTags = res.data.list[0].tableTags;
             renderTableInfo.toolTags = res.data.list[0].toolTags;
-            console.log(renderTableInfo)
             setTimeout(() => {
               doF.value = true;
             }, 1000);
@@ -142,12 +155,17 @@
         nowTag,
         value1,
         handleEdit,
-        doF
+        doF,
+        dom
       }
     }
   }
 </script>
 <style lang="less" scoped>
+  .mainBox {
+    background: none!important;
+    background-color: #fff!important;
+  }
   .toolBox {
     border: 1px solid #42bfac;
     border-radius: 2px;

@@ -14,7 +14,7 @@
       </li>
     </ul>
     <!-- 弹窗表单 -->
-    <el-dialog title="表格内容填写" v-model="showDialog" top="12vh">
+    <el-dialog :title="doneType=='add'?'新增表格':'编辑表格'" v-model="showDialog" top="12vh">
       <el-form :model="form" :label-width="84" label-position="left" @click="inputVisible=false;toolInputVisible=false">
         <el-form-item label="表格名称">
           <el-input
@@ -135,7 +135,7 @@
         <span class="dialog-footer">
           <el-button @click="showDialog = false">取 消</el-button>
           <el-button type="primary" :loading="addBtnLoading" @click="confirmDone"
-            >确定添加</el-button
+            >{{doneType=='add'?'确定添加':'确定'}}</el-button
           >
         </span>
       </template>

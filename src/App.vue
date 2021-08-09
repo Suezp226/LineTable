@@ -71,6 +71,11 @@ body {
     padding: 10px;
     box-sizing: border-box;
     background: #f1f4f5;
+    .mainBox {
+      background: url(https://suezp.cn/server/kmbj.png) no-repeat;
+      background-size: cover;
+      color: #fff;
+    }
   }
 }
 .mainBox {
