@@ -12,14 +12,14 @@
       :uniqueOpened="true"
       active-text-color="#fff"
       :router="true">
-      <el-menu-item index="/home">
-        <template #title>试一试</template>
-      </el-menu-item>
       <el-menu-item index="/introduct">
         <template #title>介绍</template>
       </el-menu-item>
       <el-menu-item index="/teachPage">
         <template #title>教程</template>
+      </el-menu-item>
+      <el-menu-item index="/home">
+        <template #title>试一试</template>
       </el-menu-item>
       <el-menu-item index="/404">
         <template #title>404</template>

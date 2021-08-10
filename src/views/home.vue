@@ -1,12 +1,16 @@
 <template>
   <div class="mainBox">
-    <div class="title">平平无奇的表格</div>
+    <div class="title">平平无奇的 表格</div>
     <ul>
       <li @click="goTablePage(item)" v-for="item in tableList" :key="item.path">
         <div class="tableName">{{ item.name }}</div>
         <div class="btnBox">
-          <span class="bgRed" @click.stop>删除</span>
-          <span class="bgGreen" @click.stop="openAddForm">编辑</span>
+          <span class="bgRed" @click.stop="deleteTable(item)">
+            <i class="el-icon-delete-solid"></i>
+          </span>
+          <span class="bgGreen" @click.stop="openEditForm(item)">
+            <i class="el-icon-s-tools"></i>
+          </span>
         </div>
       </li>
       <li class="addLi" @click="openAddForm">
@@ -14,13 +18,15 @@
       </li>
     </ul>
     <!-- 弹窗表单 -->
-    <el-dialog title="表格内容填写" v-model="showDialog" top="12vh">
+    <el-dialog :title="doneType=='add'?'新增表格':'编辑表格'" v-model="showDialog" top="12vh">
       <el-form :model="form" :label-width="84" label-position="left" @click="inputVisible=false;toolInputVisible=false">
         <el-form-item label="表格名称">
           <el-input
             v-model="form.name"
             size="small"
             style="width: 300px"
+            maxlength="15"
+            show-word-limit
             placeholder="请输入表格名称(禁止重复)"
           ></el-input>
         </el-form-item>
@@ -35,7 +41,7 @@
               :disable-transitions="false"
               @close="handleClose(tag)"
             >
-              {{ tag }}
+              {{ tag.value }}
             </el-tag>
             <el-input
               class="input-new-tag"
@@ -54,7 +60,7 @@
               class="button-new-tag"
               size="small"
               @click.stop="showInput"
-              >+ New Tag</el-button
+              >+ 添加数据项</el-button
             >
           </div>
         </el-form-item>
@@ -62,13 +68,14 @@
 
         <el-form-item label="工具栏">
           <div>
-            <span class="subTips">关键字选项</span>
+            <span class="subTips">关键字搜索</span>
             <el-checkbox-group v-model="form.keywordsList" style="display:inline-block;">
-              <el-checkbox v-for="item in dynamicTags" :key="item" :label="item"></el-checkbox>
+              <el-checkbox v-for="item in dynamicTags" :key="item.key" :label="item.key">{{item.value}}</el-checkbox>
             </el-checkbox-group>
           </div>
           <el-divider style="margin:10px 0;" />
-          <span class="subTips">其他选项</span>
+          <!-- 其他工具栏选项 -->
+          <span class="subTips">其他搜索</span>
           <div class="tagBox">
             <el-tag
               :key="item.tag"
@@ -77,9 +84,8 @@
               :disable-transitions="false"
               @close="toolHandleClose(item)"
             >
-              {{ options[(item.type*1) -1].label + ':' + item.tag }}
+              {{ options[(item.type*1) -1].label + ':' + item.value }}
             </el-tag>
-          <!-- 其他工具栏选项 -->
             <!-- 占位按钮 无功能 -->
             <el-button
               v-if="toolInputVisible"
@@ -97,8 +103,8 @@
               >
                 <el-option
                   v-for="item in dynamicTags"
-                  :key="item"
-                  :label="item"
+                  :key="item.value"
+                  :label="item.value"
                   :value="item"
                 >
                 </el-option>
@@ -117,7 +123,8 @@
                 >
                 </el-option>
               </el-select>
-              <el-button style="width:100%" @click="toolHandleInputConfirm" size="small" type="primary">确定</el-button>
+              <el-button style="width:46%" @click="toolHandleInputClose" size="small">取消</el-button>
+              <el-button style="width:46%" @click="toolHandleInputConfirm" size="small" type="primary">确定</el-button>
             </div>
             <el-button
               v-else
@@ -125,7 +132,7 @@
               size="small"
               :autofocus="true"
               @click.stop="toolShowInput($event)"
-              >+ New Tool Tag</el-button
+              >+ 添加搜索项</el-button
             >
           </div>
         </el-form-item>
@@ -133,8 +140,8 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="showDialog = false">取 消</el-button>
-          <el-button type="primary" @click="confirmAddTable"
-            >确定添加</el-button
+          <el-button type="primary" :loading="addBtnLoading" @click="confirmDone"
+            >{{doneType=='add'?'确定添加':'确定'}}</el-button
           >
         </span>
       </template>
@@ -144,21 +151,24 @@
 
 <script>
 import { reactive, ref, onMounted, watch, getCurrentInstance } from "vue";
+import sha256 from 'crypto-js/sha256';
 import { useRouter } from "vue-router";
 import store from "../store/store";
 import http from "../http/http";
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: "Home",
   props: {},
-  setup(props) {
+  setup(props,func) {
+    console.log(func,'emit')
     // 路由
     const router = useRouter();
-    let tableList = ref([{ name: "示例", path: "/tablePage" }]);
+    let tableList = ref([]);
 
     // Stroe
     const testStore = async function (obj) {
       let jud = true;
-      store.commit("changeNowTag", obj.name);
+      store.commit("changeNowTag", {name:obj.name,id:obj._id});
       await store.state.tableNameList.forEach((ele) => {
         if (ele.name === obj.name) {
           jud = false;
@@ -171,34 +181,33 @@ export default {
 
     // 获取列表显示数据
     const queryData = function () {
+      tableList.value = [];
       http.get("/table").then((res) => {
           console.log(res.data,'获取列表')
-          tableList.value = tableList.value.concat(res.data.list);
+          tableList.value = res.data.list;
       })
     };
     queryData();
 
-    // 添加弹窗
-    let showDialog = ref(false); // 操作ref 类型数据 要使用 .value
-    const openAddForm = function () {
-      showDialog.value = true;
-    };
+
 
     // 添加表单数据内容
+    let addBtnLoading = ref(false); // 添加按钮loading
     let form = reactive({
       name: "",
       tableTags: [],
       toolTags: [],
-      keywordsList: []
+      keywordsList: []  // 保存的为 列表项的 key 值
     });
 
-    // 列表项设置
+    // 列表项设置参数
     let dynamicTags = ref([]),
       inputVisible = ref(false),
       inputValue = ref("");
 
     const handleClose = function (tag) {
-      dynamicTags.value.splice(dynamicTags.value.indexOf(tag.value), 1);
+      dynamicTags.value.indexOf(tag)==-1?'':dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
+      form.keywordsList.indexOf(tag.key)==-1?'':form.keywordsList.splice(form.keywordsList.indexOf(tag.key),1)
     };
 
     const showInput = function () {
@@ -206,9 +215,10 @@ export default {
     };
 
     const handleInputConfirm = function () {
+      let beforeKey = dynamicTags.value.length>0?(dynamicTags.value[dynamicTags.value.length-1].key.split('_')[1]): 0;
       let oldValue = inputValue;
       if (oldValue.value) {
-        dynamicTags.value.push(oldValue.value);
+        dynamicTags.value.push({value:oldValue.value,key:'perKey_' + (+beforeKey+1)});
       }
       inputVisible.value = false;
       inputValue.value = "";
@@ -216,42 +226,172 @@ export default {
 
     // 工具栏设置
       // 当前新增的工具选择框
-    let nowTool = reactive({tag:'',type:'1'});
+    let nowTool = reactive({tag:null,type:'1'});
     let toolTags = ref([]),
       toolInputVisible = ref(false);
 
+    // 删除工具栏内容
     const toolHandleClose = function (tag) {
-      toolTags.value.splice(toolTags.value.indexOf(tag.value), 1);
+      if(toolTags.value.indexOf(tag)!=-1) {
+        toolTags.value.splice(toolTags.value.indexOf(tag), 1);
+      }
     };
 
     const toolShowInput = function (event) {
-      console.log(event)
       toolInputVisible.value = true;
     };
 
     // 工具栏确认
     const toolHandleInputConfirm = function () {
       if (nowTool.tag && nowTool.type) {
-        toolTags.value.push({...nowTool});
+        toolTags.value.push({...nowTool.tag,type:nowTool.type});
       }
       toolInputVisible.value = false;
-      nowTool.tag = '';
+      nowTool.tag = null;
+    };
+
+    //  工具栏取消
+    const toolHandleInputClose = function () {
+      toolInputVisible.value = false;
+      nowTool.tag = null;
+    };
+
+    // 弹窗相关参数
+    let showDialog = ref(false); // 操作ref 类型数据 要使用 .value
+    let doneType = ref('add');  // 判断当前操作类型
+
+    // 点击编辑表格
+    const openEditForm = function(item) {
+      console.log(item);
+      toolHandleInputClose();
+      doneType.value = 'edit';
+      this.showDialog = true;
+      let {name,tableTags,keywordsList,_id} = item;
+      dynamicTags.value = tableTags;
+      toolTags.value = item.toolTags;
+
+      form.name = name;
+      form.tableTags = tableTags;
+      form.toolTags = item.toolTags;
+      form.keywordsList = keywordsList;
+      form._id = _id;
+    }
+
+    // 点击新增表格
+    const openAddForm = function () {
+      toolHandleInputClose();
+      doneType.value = 'add';
+      form.name = '';
+      form.tableTags = [];
+      form.toolTags = [];
+      form.keywordsList = [];
+      delete form._id;
+
+      dynamicTags.value = [];
+      toolTags.value = [];
+      showDialog.value = true;
     };
 
     // 确认添加表格
     const confirmAddTable = function () {
-      form.tableTags = dynamicTags;
-      form.toolTags = toolTags;
-      console.log(form);
+      form.toolTags = toolTags.value;     // 工具栏项
+      form.tableTags = dynamicTags.value; //数据项
+      addBtnLoading.value = true;
+      console.log(form,'form')
       http.post("/table/addTable",form).then((res) => {
+        if(res.data.code == 200) {
+          ElMessage({
+            type: 'success',
+            message: '添加成功!'
+          });
+          showDialog.value = false;
+          addBtnLoading.value = false;
+          tableList.value = [];
+          queryData();
+        }
         console.log('添加表格',res.data)
       });
     };
 
+    // 确定编辑表格
+    const confirmEditTable = function() {
+      form.toolTags = toolTags.value;     // 工具栏项
+      form.tableTags = dynamicTags.value; //数据项
+      addBtnLoading.value = true;
+      console.log(form,'form编辑')
+      http.post("/table/editTable",form).then((res) => {
+        if(res.data.code == 200) {
+          ElMessage({
+            type: 'success',
+            message: '修改成功!'
+          });
+          showDialog.value = false;
+          addBtnLoading.value = false;
+          tableList.value = [];
+          queryData();
+        }
+        console.log('编辑表格',res.data)
+      });
+    }
+
+    // 点击确定按钮
+    const confirmDone = function() {
+      // 校验数据  表明 数据项 搜索条件  关键字包含
+
+      if(form.name.trim() == '') {
+        ElMessage.warning({
+          message: '请填写表名称',
+          type: 'warning'
+        });
+        return
+      }
+
+      console.log(doneType);
+      if( doneType.value == 'add') {
+        confirmAddTable();
+      } else {
+        confirmEditTable();
+      }
+    }
+
+    // 删除 表格
+    const deleteTable = function(item) {
+      ElMessageBox.confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          showCancelButton: true,
+          type: 'warning'
+        }).then(() => {
+          http.post('/table/deleteTable',{_id:item._id}).then(res=>{
+            if(res.data.code == 200) {
+              queryData();
+              ElMessage({
+                type: 'success',
+                message: '删除成功!'
+              });
+            } else {
+              ElMessage({
+                type: 'info',
+                message: '服务异常，请稍后再试'
+              });
+            }
+          })
+        }).catch(() => {
+          // ElMessage({
+          //   type: 'info',
+          //   message: '已取消删除'
+          // });
+        });
+    }
+
+
     //跳转表格内容
     const goTablePage = function (item) {
       testStore(item);
-      router.push("/tablePage");
+      router.push({
+        path:"/tablePage",
+        query: {id:item._id}
+      });
     };
 
     return {
@@ -264,13 +404,17 @@ export default {
       toolInputVisible,
       queryData,
       openAddForm,
+      openEditForm,
       handleClose,
       showInput,
       handleInputConfirm,
       toolHandleClose,
       toolShowInput,
       toolHandleInputConfirm,
+      toolHandleInputClose,
       confirmAddTable,
+      deleteTable,
+      confirmDone,
       goTablePage,
       tableList,
       testStore,
@@ -288,7 +432,9 @@ export default {
           label: "下拉框选择",
         },
       ],
-      nowTool
+      nowTool,
+      addBtnLoading,
+      doneType
     };
   },
 };
@@ -303,7 +449,7 @@ export default {
     flex-wrap: wrap;
     li {
       height: 100px;
-      width: 100px;
+      width: 130px;
       border-radius: 2px;
       background-color: #409eff;
       cursor: pointer;

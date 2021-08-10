@@ -1,23 +1,33 @@
 <template>
-  <div id="app">
-    <menu-nav></menu-nav>
-    <div class="contentBox">
-      <header-nav></header-nav>
-      <div class="routerBox" >
-        <router-view></router-view>
+  <el-config-provider :locale="locale">
+    <div id="app">
+      <menu-nav></menu-nav>
+      <div class="contentBox">
+        <header-nav></header-nav>
+        <div class="routerBox" >
+          <router-view></router-view>
+        </div>
       </div>
     </div>
-  </div>
+  </el-config-provider>
 </template>
 
 <script>
 import HeaderNav from './components/HeaderNav.vue'
 import MenuNav from './components/MenuNav.vue'
+import { ElConfigProvider } from 'element-plus'
+import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+// Locale Wrapper 入口
 export default {
   name: 'App',
-  components: {HeaderNav, MenuNav},
+   props: {
+
+  },
+  components: {HeaderNav, MenuNav, [ElConfigProvider.name]: ElConfigProvider,},
   setup(props) {
-    return {}
+    return {
+      locale: zhCn,
+    }
   }
 }
 
@@ -53,6 +63,7 @@ body {
   flex:1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   .routerBox {
     flex: 1;
     overflow-y: auto;
@@ -60,6 +71,11 @@ body {
     padding: 10px;
     box-sizing: border-box;
     background: #f1f4f5;
+    .mainBox {
+      background: url(https://suezp.cn/server/kmbj.png) no-repeat;
+      background-size: cover;
+      color: #fff;
+    }
   }
 }
 .mainBox {
@@ -84,6 +100,9 @@ body {
 .el-table--border th:first-child .cell,
 .el-form--inline .el-form-item__label {
   color: #000;
+}
+.el-form--inline .el-form-item {
+  margin-bottom: 12px;
 }
 .el-table th.is-leaf {
   background-color: #3ba7ff93;

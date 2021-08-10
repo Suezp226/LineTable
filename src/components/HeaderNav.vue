@@ -2,26 +2,32 @@
   <div class="header">
     <span class="routerName" @click="goBack">返回</span>
     <el-tag
-      v-for="item in navList"
-      :key="item.path"
+      v-for="nav in navList"
+      :key="nav.path"
       style="margin-right:10px;cursor:pointer;"
       effect="dark"
-      :type="nowTag.name == item.name?'success':''"
+      :type="nowTag.name == nav.name?'success':''"
       closable
-      @close="deleteTableName(item)"
-      @click="goPage(item)">
-      {{item.name}}
+      @close="deleteTableName(nav)"
+      @click="goPage(nav)">
+      {{nav.name}}
     </el-tag>
     <div class="usePowerBox">
       <ul>
         <li>
-          <img src="../assets/logo.png" alt="Vue">
+          <el-tooltip class="item" effect="dark" content="Vue3" placement="bottom">
+            <img src="../assets/logo.png" alt="Vue">
+          </el-tooltip>
         </li>
         <li>
-          <img src="../assets/elementPlus.svg" style="margin-top:5px;" alt="ElementPlus">
+          <el-tooltip class="item" effect="dark" content="ElementPlus" placement="bottom">
+            <img src="../assets/elementPlus.svg" style="margin-top:5px;" alt="ElementPlus">
+          </el-tooltip>
         </li>
         <li>
-          <img src="../assets/axios.svg" alt="Axios">
+          <el-tooltip class="item" effect="dark" content="Axios" placement="bottom">
+            <img src="../assets/axios.svg" alt="Axios">
+          </el-tooltip>
         </li>
       </ul>
     </div>
@@ -51,14 +57,14 @@
         }
       });
 
-      // Store 绑定了store 的数据智能通过 commit 进行操作
+      // Store 绑定了store 的数据只能通过 commit 进行操作
       let navList = ref(store.state.tableNameList);
       let nowTag = reactive(store.state.nowTag);
 
       watch(store.state.tableNameList,()=>{
         nowTag = navList.value.length>0?
-        navList.value[navList.value.length-1].name:'/';
-        store.commit('changeNowTag',nowTag)
+        navList.value[navList.value.length-1]:{name:'',id:null};
+        store.commit('changeNowTag',{name:nowTag.name,id:nowTag._id})
       })
 
       const deleteTableName = function(obj) {
@@ -71,8 +77,12 @@
       }
       // 点击当前Tag
       const goPage = function(obj) {
-        router.push(obj.path);
-        store.commit('changeNowTag',obj.name);
+        // TODO 表格默认路由是 tablepage
+         router.push({
+            path:"/tablePage",
+            query: {id:obj._id}
+          });
+        store.commit('changeNowTag', {name:obj.name,id:obj._id});
       }
 
       // 返回 

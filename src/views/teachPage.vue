@@ -1,7 +1,7 @@
 <template>
   <div class="mainBox">
     <div class="title">
-      平平无奇的教程
+      平平无奇的 教程
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@ export default {
 <style lang="less" scoped>
 .mainBox {
   .title {
-    color:rgb(9, 18, 22);
+    color:#fff;
   }
 }
 </style>

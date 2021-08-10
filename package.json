@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "crypto-js": "^4.1.1",
     "element-plus": "^1.0.2-beta.65",
     "less": "^4.1.1",
     "less-loader": "^10.0.1",
