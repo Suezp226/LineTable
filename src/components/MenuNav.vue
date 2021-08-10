@@ -26,7 +26,12 @@
       </el-menu-item>
     </el-menu>
     <div class="footerDesc">
-      Authorization Suezp
+      <transition name="el-fade-in-linear">
+        <div class="author">Authorization Suezp</div>
+      </transition>
+      <div class="beian">
+        <a href="http://www.beian.gov.cn/portal/index.do">闽ICP备19006430号-2</a>
+      </div>
     </div>
   </div>
 </template>
@@ -106,6 +111,21 @@
   .footerDesc {
     padding: 10px 0;
     font-size: 13px;
+    .author {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .author:hover {
+      color: #2c80c5;
+    }
+    .beian {
+      margin-top: 5px;
+      a {
+        text-decoration: none;
+        font-size:12px;
+        color:gray;
+      }
+    }
   }
   @keyframes shaking {
     0% {
