@@ -12,10 +12,11 @@ import axios from 'axios';
 
 const http = axios;
 
+console.log(import.meta.env.VITE_BASE_URL,import.meta.env.VITE_APP_TITLE, 'BASERL')
+
 http.interceptors.request.use(req=>{
   // console.log(req,'请求拦截');
-  req.url = "http://127.0.0.1:1113" + req.url;
-  // req.url = "https://suezp.cn/tableServer" + req.url;  //正式环境
+  req.url = import.meta.env.VITE_BASE_URL + req.url;
   return req
 })
 
