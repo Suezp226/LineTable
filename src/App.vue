@@ -101,6 +101,9 @@ body {
 .el-form--inline .el-form-item__label {
   color: #000;
 }
+.el-form--inline .el-form-item {
+  margin-bottom: 12px;
+}
 .el-table th.is-leaf {
   background-color: #3ba7ff93;
 }

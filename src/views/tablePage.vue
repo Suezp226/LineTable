@@ -5,7 +5,7 @@
       :model="form" 
       label-width="80px" 
       inline 
-      style="margin-bottom:-20px;min-height:58px;"
+      style="min-height:58px;"
       :highlight-current-row="true"
       :ref="dom"
       >
@@ -20,6 +20,9 @@
             format="YYYY - MM - DD">
           </el-date-picker>
           <el-input style="width:150px" size="medium" v-else></el-input>
+        </el-form-item>
+        <el-form-item label="关键字">
+          <el-input style="width:200px" :placeholder="'输入 '+keywordsDesc" size="medium"></el-input>
         </el-form-item>
         <el-button type="primary" size="medium" style="width:80px;margin-left:20px;">查询</el-button>
       </el-form>
@@ -98,17 +101,26 @@
           toolTags: [],
           keywordsList: []  // 保存的为 列表项的 key 值
       });
-      let doF = ref(false);
+      let keywordsDesc = ref('');
       // 获取列表显示数据
       const queryData = function () {
         renderTableInfo.tableTags = [];
         renderTableInfo.toolTags = [];
+        keywordsDesc.value = '';
         http.get("/table?"+'_id='+route.query.id).then((res) => {
             renderTableInfo.tableTags = res.data.list[0].tableTags;
             renderTableInfo.toolTags = res.data.list[0].toolTags;
-            setTimeout(() => {
-              doF.value = true;
-            }, 1000);
+            renderTableInfo.keywordsList = res.data.list[0].keywordsList;
+
+            // TODO  有机会优化一下
+            renderTableInfo.keywordsList.forEach(key=>{
+              renderTableInfo.tableTags.forEach(tag=>{
+                if(key === tag.key) {
+                  keywordsDesc.value += tag.value + '/';
+                }
+              })
+            })
+            keywordsDesc.value = keywordsDesc.value.slice(0,-1);
         })
       };
       queryData();
@@ -119,21 +131,21 @@
       let tableData =  [{
             'perKey_1': '2016-05-02',
             'perKey_2': '王小虎',
-            'perKey_3': '上海市普陀区金沙江路 1518 弄'
+            'perKey_3': '上海市普陀区金沙江路'
           }, {
             'perKey_1': '2016-05-04',
             perKey_2: '王小虎',
-            perKey_3: '上海市普陀区金沙江路 1517 弄'
+            perKey_3: '上海市普陀区金沙江路'
           }, 
           {
             'perKey_1': '2016-05-01',
             perKey_2: '王小虎',
-            perKey_3: '上海市普陀区金沙江路 1519 弄'
+            perKey_3: '上海市普陀区金沙江路'
           }, 
           {
             'perKey_1': '2016-05-01',
             perKey_2: '王小虎',
-            perKey_3: '上海市普陀区金沙江路 1519 弄'
+            perKey_3: '上海市普陀区金沙江路'
           }];
         const handleSizeChange = function() {
 
@@ -155,7 +167,7 @@
         nowTag,
         value1,
         handleEdit,
-        doF,
+        keywordsDesc,
         dom
       }
     }

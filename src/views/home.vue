@@ -5,8 +5,12 @@
       <li @click="goTablePage(item)" v-for="item in tableList" :key="item.path">
         <div class="tableName">{{ item.name }}</div>
         <div class="btnBox">
-          <span class="bgRed" @click.stop>删除</span>
-          <span class="bgGreen" @click.stop="openEditForm(item)">编辑</span>
+          <span class="bgRed" @click.stop="deleteTable(item)">
+            <i class="el-icon-delete-solid"></i>
+          </span>
+          <span class="bgGreen" @click.stop="openEditForm(item)">
+            <i class="el-icon-s-tools"></i>
+          </span>
         </div>
       </li>
       <li class="addLi" @click="openAddForm">
@@ -21,6 +25,8 @@
             v-model="form.name"
             size="small"
             style="width: 300px"
+            maxlength="15"
+            show-word-limit
             placeholder="请输入表格名称(禁止重复)"
           ></el-input>
         </el-form-item>
@@ -64,7 +70,7 @@
           <div>
             <span class="subTips">关键字搜索</span>
             <el-checkbox-group v-model="form.keywordsList" style="display:inline-block;">
-              <el-checkbox v-for="item in dynamicTags" :key="item.key"  :label="item.key">{{item.value}}</el-checkbox>
+              <el-checkbox v-for="item in dynamicTags" :key="item.key" :label="item.key">{{item.value}}</el-checkbox>
             </el-checkbox-group>
           </div>
           <el-divider style="margin:10px 0;" />
@@ -149,11 +155,12 @@ import sha256 from 'crypto-js/sha256';
 import { useRouter } from "vue-router";
 import store from "../store/store";
 import http from "../http/http";
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: "Home",
   props: {},
-  setup(props) {
+  setup(props,func) {
+    console.log(func,'emit')
     // 路由
     const router = useRouter();
     let tableList = ref([]);
@@ -174,9 +181,10 @@ export default {
 
     // 获取列表显示数据
     const queryData = function () {
+      tableList.value = [];
       http.get("/table").then((res) => {
           console.log(res.data,'获取列表')
-          tableList.value = tableList.value.concat(res.data.list);
+          tableList.value = res.data.list;
       })
     };
     queryData();
@@ -290,10 +298,16 @@ export default {
       addBtnLoading.value = true;
       console.log(form,'form')
       http.post("/table/addTable",form).then((res) => {
-        showDialog.value = false;
-        addBtnLoading.value = false;
-        tableList.value = [];
-        queryData();
+        if(res.data.code == 200) {
+          ElMessage({
+            type: 'success',
+            message: '添加成功!'
+          });
+          showDialog.value = false;
+          addBtnLoading.value = false;
+          tableList.value = [];
+          queryData();
+        }
         console.log('添加表格',res.data)
       });
     };
@@ -305,10 +319,16 @@ export default {
       addBtnLoading.value = true;
       console.log(form,'form编辑')
       http.post("/table/editTable",form).then((res) => {
-        showDialog.value = false;
-        addBtnLoading.value = false;
-        tableList.value = [];
-        queryData();
+        if(res.data.code == 200) {
+          ElMessage({
+            type: 'success',
+            message: '修改成功!'
+          });
+          showDialog.value = false;
+          addBtnLoading.value = false;
+          tableList.value = [];
+          queryData();
+        }
         console.log('编辑表格',res.data)
       });
     }
@@ -331,6 +351,36 @@ export default {
       } else {
         confirmEditTable();
       }
+    }
+
+    // 删除 表格
+    const deleteTable = function(item) {
+      ElMessageBox.confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          showCancelButton: true,
+          type: 'warning'
+        }).then(() => {
+          http.post('/table/deleteTable',{_id:item._id}).then(res=>{
+            if(res.data.code == 200) {
+              queryData();
+              ElMessage({
+                type: 'success',
+                message: '删除成功!'
+              });
+            } else {
+              ElMessage({
+                type: 'info',
+                message: '服务异常，请稍后再试'
+              });
+            }
+          })
+        }).catch(() => {
+          // ElMessage({
+          //   type: 'info',
+          //   message: '已取消删除'
+          // });
+        });
     }
 
 
@@ -362,6 +412,7 @@ export default {
       toolHandleInputConfirm,
       toolHandleInputClose,
       confirmAddTable,
+      deleteTable,
       confirmDone,
       goTablePage,
       tableList,
@@ -397,7 +448,7 @@ export default {
     flex-wrap: wrap;
     li {
       height: 100px;
-      width: 100px;
+      width: 130px;
       border-radius: 2px;
       background-color: #409eff;
       cursor: pointer;
