@@ -17,9 +17,10 @@
             v-model="value1"
             type="date"
             placeholder="选择日期"
+            style="width:180px"
             format="YYYY - MM - DD">
           </el-date-picker>
-          <el-input style="width:150px" placeholder="请输入" size="medium" v-else></el-input>
+          <el-input style="width:180px" placeholder="请输入" size="medium" v-else></el-input>
         </el-form-item>
         <el-form-item label="关键字">
           <el-input style="width:200px" :placeholder="'请输入 '+keywordsDesc" size="medium"></el-input>
