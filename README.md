@@ -22,3 +22,15 @@ VUE3 + ElementPlus + Vue-router + Axios.js
  目前前端页面在慢慢的写 因为我想页面好看一点 所以我就比较 磨叽 ，  因为不好看的页面我就没有写下去的动力了--
  
  也不着急 慢慢来吧  下班
+
+
+ ## 配置 VITE 
+
+.env.production  .env.development  
+配置文件内以 VITE_ 开头的变量可以在 js 中获取到  以 import.meta.env.XXX  获取到 
+
+默认 两种模式 可自定义模式 
+
+
+通过  .env.XXX  配置模式名称 在文件中 NODE_ENV=production 来申明当前基本模式 
+启动  vite build --mode XXX   来自定义模式 以及环境内容
