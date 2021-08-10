@@ -1,6 +1,6 @@
 <template>
   <div class="mainBox">
-    <div class="title">平平无奇的表格</div>
+    <div class="title">平平无奇的 表格</div>
     <ul>
       <li @click="goTablePage(item)" v-for="item in tableList" :key="item.path">
         <div class="tableName">{{ item.name }}</div>
@@ -60,7 +60,7 @@
               class="button-new-tag"
               size="small"
               @click.stop="showInput"
-              >+ New Tag</el-button
+              >+ 添加数据项</el-button
             >
           </div>
         </el-form-item>
@@ -132,7 +132,7 @@
               size="small"
               :autofocus="true"
               @click.stop="toolShowInput($event)"
-              >+ New Tool Tag</el-button
+              >+ 添加搜索项</el-button
             >
           </div>
         </el-form-item>
@@ -168,7 +168,7 @@ export default {
     // Stroe
     const testStore = async function (obj) {
       let jud = true;
-      store.commit("changeNowTag", obj.name);
+      store.commit("changeNowTag", {name:obj.name,id:obj._id});
       await store.state.tableNameList.forEach((ele) => {
         if (ele.name === obj.name) {
           jud = false;
@@ -230,9 +230,11 @@ export default {
     let toolTags = ref([]),
       toolInputVisible = ref(false);
 
+    // 删除工具栏内容
     const toolHandleClose = function (tag) {
-      toolTags.value.indexOf({...nowTool.tag,type:nowTool.type})==-1?'':
-      toolTags.value.splice(toolTags.value.indexOf(tag), 1);
+      if(toolTags.value.indexOf(tag)!=-1) {
+        toolTags.value.splice(toolTags.value.indexOf(tag), 1);
+      }
     };
 
     const toolShowInput = function (event) {
@@ -241,7 +243,6 @@ export default {
 
     // 工具栏确认
     const toolHandleInputConfirm = function () {
-      console.log(nowTool)
       if (nowTool.tag && nowTool.type) {
         toolTags.value.push({...nowTool.tag,type:nowTool.type});
       }

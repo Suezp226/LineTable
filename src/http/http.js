@@ -15,6 +15,7 @@ const http = axios;
 http.interceptors.request.use(req=>{
   // console.log(req,'请求拦截');
   req.url = "http://127.0.0.1:1113" + req.url;
+  // req.url = "https://suezp.cn/tableServer" + req.url;  //正式环境
   return req
 })
 

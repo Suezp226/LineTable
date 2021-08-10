@@ -4,7 +4,7 @@ export default createStore({
   state: {
     count: 0,
     tableNameList: [],
-    nowTag: {name:''},
+    nowTag: {name:'',id:null},
   },
   mutations: {
     increment (state) {
@@ -18,8 +18,9 @@ export default createStore({
       if(!obj || state.tableNameList.indexOf(obj) == -1) return
       state.tableNameList.splice(state.tableNameList.indexOf(obj),1);
     },
-    changeNowTag(state, tag) {
-      state.nowTag.name = tag;
+    changeNowTag(state, obj) {
+      state.nowTag.name = obj.name;
+      state.nowTag.id = obj.id;
     }
   }
 })

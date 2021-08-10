@@ -1,6 +1,6 @@
 <template>
   <div class="mainBox">
-    <div class="title">平平无奇的介绍</div>
+    <div class="title">平平无奇的 介绍</div>
   </div>
 </template>
 

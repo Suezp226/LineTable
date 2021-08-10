@@ -57,14 +57,14 @@
         }
       });
 
-      // Store 绑定了store 的数据智能通过 commit 进行操作
+      // Store 绑定了store 的数据只能通过 commit 进行操作
       let navList = ref(store.state.tableNameList);
       let nowTag = reactive(store.state.nowTag);
 
       watch(store.state.tableNameList,()=>{
         nowTag = navList.value.length>0?
-        navList.value[navList.value.length-1].name:'/';
-        store.commit('changeNowTag',nowTag)
+        navList.value[navList.value.length-1]:{name:'',id:null};
+        store.commit('changeNowTag',{name:nowTag.name,id:nowTag._id})
       })
 
       const deleteTableName = function(obj) {
@@ -82,7 +82,7 @@
             path:"/tablePage",
             query: {id:obj._id}
           });
-        store.commit('changeNowTag',obj.name);
+        store.commit('changeNowTag', {name:obj.name,id:obj._id});
       }
 
       // 返回 
