@@ -21,12 +21,17 @@
         </li>
         <li>
           <el-tooltip class="item" effect="dark" content="ElementPlus" placement="bottom">
-            <img src="../assets/elementPlus.svg" style="margin-top:5px;" alt="ElementPlus">
+            <img src="../assets/elementPlus.svg" alt="ElementPlus">
           </el-tooltip>
         </li>
         <li>
-          <el-tooltip class="item" effect="dark" content="Axios" placement="bottom">
-            <img src="../assets/axios.svg" alt="Axios">
+          <el-tooltip class="item" effect="dark" content="Vite" placement="bottom">
+            <img src="../assets/vite.svg" alt="Axios">
+          </el-tooltip>
+        </li>
+        <li>
+          <el-tooltip class="item" effect="dark" content="Node" placement="bottom">
+            <img src="../assets/node.svg" alt="Axios" style="background-color:#333;">
           </el-tooltip>
         </li>
       </ul>
