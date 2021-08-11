@@ -116,10 +116,11 @@
                 placeholder="请选择"
               >
                 <el-option
-                  v-for="item in options"
+                  v-for="(item,ind) in options"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
+                  :disabled="ind==2"
                 >
                 </el-option>
               </el-select>
