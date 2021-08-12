@@ -50,6 +50,8 @@
               placeholder="回车确定"
               ref="saveTagInput"
               size="small"
+              maxlength="10"
+              show-word-limit
               @click.stop
               @keyup.enter="handleInputConfirm"
               @blur="handleInputConfirm"
@@ -116,10 +118,11 @@
                 placeholder="请选择"
               >
                 <el-option
-                  v-for="item in options"
+                  v-for="(item,ind) in options"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
+                  :disabled="ind==2"
                 >
                 </el-option>
               </el-select>
@@ -215,10 +218,10 @@ export default {
     };
 
     const handleInputConfirm = function () {
-      let beforeKey = dynamicTags.value.length>0?(dynamicTags.value[dynamicTags.value.length-1].key.split('_')[1]): 0;
       let oldValue = inputValue;
       if (oldValue.value) {
-        dynamicTags.value.push({value:oldValue.value,key:'perKey_' + (+beforeKey+1)});
+        //  每个数据项的key值
+        dynamicTags.value.push({value:oldValue.value,key:'perKey_' + parseInt(new Date().valueOf() / 1000)});
       }
       inputVisible.value = false;
       inputValue.value = "";
@@ -546,7 +549,7 @@ export default {
 }
 .input-new-tag {
   vertical-align: top;
-  width: 90px;
+  width: 150px;
 }
 .bgRed {
   background: #f63f5a;
