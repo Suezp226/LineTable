@@ -23,7 +23,7 @@
           <el-input style="width:180px" placeholder="请输入" size="medium" v-else></el-input>
         </el-form-item>
         <el-form-item label="关键字">
-          <el-input style="width:200px" :placeholder="'请输入 '+keywordsDesc" size="medium"></el-input>
+          <el-input style="width:250px" :placeholder="'请输入 '+keywordsDesc" size="medium"></el-input>
         </el-form-item>
         <el-button type="primary" size="medium" style="width:80px;margin-left:20px;" @click="search">查询</el-button>
         <el-button type="success" size="medium" style="width:80px;margin-left:20px;" @click="addNewData">新增</el-button>
@@ -33,7 +33,7 @@
       <el-table
         :data="tableData"
         style="width:100%;overflow-x:auto;"
-        size="mini"
+        size="medium"
         stripe
         border>
         <el-table-column
@@ -55,10 +55,8 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template #default="scope">
-            <el-button
-              size="mini"
-              type="primary"
-              @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDeleteFn(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -79,16 +77,17 @@
     </el-pagination>
 
     <!-- 编辑 / 新增弹窗 -->
-    <el-dialog title="收货地址" v-model="dialogFormVisible" width="500px">
+    <el-dialog :title="isEdit?'正在编辑':'新增数据'" v-model="dialogFormVisible" width="500px">
       <el-form :model="dialogForm" label-position="left">
-        <el-form-item :label-width="(tag.value.length * 20>160?160:tag.value.length * 20) + 'px'" :label="tag.value" v-for="tag in renderTableInfo.tableTags" :key="tag.key">
+        <el-form-item :label-width="((maxLabelWidth * 20) > 160?160:maxLabelWidth * 20) + 'px'" :label="tag.value" v-for="tag in renderTableInfo.tableTags" :key="tag.key">
           <el-input v-model="dialogForm[tag.key]" placeholder="请输入..." style="width:90%" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="confirmAddData">确定添加</el-button>
+          <el-button v-if="isEdit" type="primary" @click="confirmEditDataFn">确定修改</el-button>
+          <el-button v-else type="primary" @click="confirmAddData">确定添加</el-button>
         </span>
       </template>
     </el-dialog>
@@ -124,7 +123,7 @@
       nextTick(() => {
        console.log(refs);
      })
-
+      let maxLabelWidth = ref(0);
       let route = useRoute();
       let renderTableInfo = reactive({
           name: "",
@@ -138,6 +137,7 @@
       // 获取列表显示数据
       const queryData = function (id) {
         nowTableId = id;
+        pageLoading.value = true;
         renderTableInfo.tableTags = [];
         renderTableInfo.toolTags = [];
         keywordsDesc.value = '';
@@ -149,6 +149,9 @@
             // TODO  有机会优化一下
             renderTableInfo.keywordsList.forEach(key=>{
               renderTableInfo.tableTags.forEach(tag=>{
+                if(maxLabelWidth.value < tag.value.length) {
+                  maxLabelWidth.value = tag.value.length
+                }
                 if(key === tag.key) {
                   keywordsDesc.value += tag.value + '/';
                 }
@@ -168,31 +171,39 @@
         })
       };
 
-      pageLoading.value = true;
       queryData(route.query.id);
+
+      // 查询按钮
+      const search = function() {
+        pageLoading.value = true;
+        tableData.value = [];
+        http.get('/insideTable/getInsideData?'+'_id=' + nowTableId).then(res=>{
+          pageLoading.value = false;
+          tableData.value = res.data.docs;
+        })
+      }
 
       // Store
       let nowTag = store.state.nowTag;
       watch(nowTag,()=>{
         if(!nowTag.id) return
-        pageLoading.value = true;
         queryData(nowTag.id);
       })
 
       let value1 = ref('');
       const handleSizeChange = function() {};
       const handleCurrentChange = function() {};
-      const handleEdit = function (ind,row) {
-          console.log(ind,row)
-        }
+
       let currentPage = ref(1);
 
       // 新增 弹框 以及参数
       let dialogForm = reactive({});
       let dialogFormVisible = ref(false);
+      let isEdit = ref(false);
 
       // 新增 打开弹窗 以及 初始化参数
       const addNewData = function() {
+        isEdit.value = false;
         renderTableInfo.tableTags.forEach(ele=>{
           dialogForm[ele.key] = '';
         })
@@ -208,23 +219,75 @@
               type: 'success',
               message: res.data.msg
             });
-            pageLoading.value = true;
-            queryData(nowTableId);
+            search();
             dialogFormVisible.value = false;
           }
           console.log(res.data);
         })
       }
 
-      // 查询按钮
-      const search = function() {
-        pageLoading.value = true;
-        tableData.value = [];
-        http.get('/insideTable/getInsideData?'+'_id=' + nowTableId).then(res=>{
-          pageLoading.value = false;
-          tableData.value = res.data.docs;
+      // 点击列表编辑按钮
+      const handleEdit = function (ind,row) {
+        isEdit.value = true;
+        dialogFormVisible.value = true;
+        let obj = {...row}
+        delete obj.__v
+        // delete obj._id
+        for (const key in obj) {
+          dialogForm[key] = obj[key];
+        }
+      }
+
+      // 确定编辑
+      const confirmEditDataFn = function() {
+        let param = {...dialogForm};
+        param.table_id = nowTableId;
+        console.log(param);
+        http.post('/insideTable/editInsideData',param).then(res=>{
+          if(res.data.code == 200) {
+            ElMessage.success({
+              type: 'success',
+              message: '修改成功'
+            })
+            dialogFormVisible.value = false;
+            search();
+          }
+          console.log(res.data)
         })
       }
+
+      // 点击列表删除
+      const handleDeleteFn = function(ind,row) {
+        ElMessageBox.confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          showCancelButton: true,
+          type: 'warning'
+        }).then(() => {
+          http.post('/insideTable/deleteInsideData',{table_id:nowTableId,_id:row._id}).then(res=>{
+            if(res.data.code == 200) {
+              search();
+              ElMessage({
+                type: 'success',
+                message: '删除成功!'
+              });
+            } else {
+              ElMessage({
+                type: 'info',
+                message: '服务异常，请稍后再试'
+              });
+            }
+          })
+        }).catch(() => {  // 点击取消
+          // ElMessage({
+          //   type: 'info',
+          //   message: '服务异常，请稍后再试'
+          // });
+        });
+      }
+
+
+
 
       return {
         searchForm: reactive({}),
@@ -237,13 +300,17 @@
         nowTag,
         value1,
         handleEdit,
+        handleDeleteFn,
         keywordsDesc,
         dom,
         pageLoading,
         dialogFormVisible,
         dialogForm,
         addNewData,
-        confirmAddData
+        confirmAddData,
+        confirmEditDataFn,
+        maxLabelWidth,
+        isEdit
       }
     }
   }
