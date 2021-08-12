@@ -102,6 +102,7 @@
         font-size: 20px;
         color: #000;
         font-weight: bold;
+        cursor: default;
       }
     }
   }
