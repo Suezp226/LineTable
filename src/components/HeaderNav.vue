@@ -1,17 +1,19 @@
 <template>
   <div class="header">
     <span class="routerName" @click="goBack">返回</span>
-    <el-tag
-      v-for="nav in navList"
-      :key="nav.path"
-      style="margin-right:10px;cursor:pointer;"
-      effect="dark"
-      :type="nowTag.name == nav.name?'success':''"
-      closable
-      @close="deleteTableName(nav)"
-      @click="goPage(nav)">
-      {{nav.name}}
-    </el-tag>
+    <div class="classTag">
+      <el-tag
+        v-for="nav in navList"
+        :key="nav.path"
+        style="margin-right:10px;cursor:pointer;"
+        effect="dark"
+        :type="nowTag.name == nav.name?'success':''"
+        closable
+        @close="deleteTableName(nav)"
+        @click="goPage(nav)">
+        {{nav.name}}
+      </el-tag>
+    </div>
     <div class="usePowerBox">
       <ul>
         <li>
@@ -32,6 +34,11 @@
         <li>
           <el-tooltip class="item" effect="dark" content="Node" placement="bottom">
             <img src="../assets/node.svg" alt="Axios" style="background-color:#333;">
+          </el-tooltip>
+        </li>
+        <li>
+          <el-tooltip class="item" effect="dark" content="MongoDB" placement="bottom">
+            <img src="../assets/mongodb.png" alt="Axios">
           </el-tooltip>
         </li>
       </ul>
@@ -114,7 +121,7 @@
     height: 40px;
     line-height: 40px;
     z-index: 10;
-    padding: 0 30px;
+    padding: 0 15px;
     /* text-align: center; */
     box-shadow: 5px 1px 6px rgb(0 0 0 / 35%);
     .routerName {
@@ -135,9 +142,33 @@
       animation: jump .8s ease-in-out 0s infinite alternate;
       background-color: #576dd7;
     }
-    .usePowerBox {
+    .classTag {
       flex: 1;
-      overflow: hidden;
+      overflow-y: hidden;
+      overflow-x: auto;
+      display: flex;
+      flex-wrap: nowrap;
+    }
+    .classTag::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+      cursor: pointer;
+    }
+    /* 滚动槽 */
+    .classTag::-webkit-scrollbar-track {
+      -webkit-box-shadow:inset006pxrgba(0,0,0,0.3);
+      border-radius: 3px;
+    }
+    /* 滚动条滑块 */
+    .classTag::-webkit-scrollbar-thumb {
+      border-radius:10px;
+      background:rgba(0,0,0,0.1);
+      -webkit-box-shadow:inset006pxrgba(0,0,0,0.5);
+    }
+    .classTag::-webkit-scrollbar-thumb {
+      background:rgba(255,0,0,0.4);
+    }
+    .usePowerBox {
       ul {
         width: 100%;
         height: 40px;
