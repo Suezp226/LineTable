@@ -74,6 +74,7 @@
       let nowTag = reactive(store.state.nowTag);
 
       watch(store.state.tableNameList,()=>{
+        if(router.currentRoute.value.meta.desc != '应用') return
         nowTag = navList.value.length>0?
         navList.value[navList.value.length-1]:{name:'',id:null};
         store.commit('changeNowTag',{name:nowTag.name,id:nowTag._id})

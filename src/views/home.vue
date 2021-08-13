@@ -186,7 +186,7 @@ export default {
       });
       if (obj && jud) {
         store.commit("addTableName", obj);
-      }
+      } 
     };
 
     // 获取列表显示数据
@@ -395,6 +395,8 @@ export default {
         }).then(() => {
           http.post('/table/deleteTable',{_id:item._id}).then(res=>{
             if(res.data.code == 200) {
+              console.log(item);
+              store.commit('deleteTableName',item);
               queryData();
               ElMessage({
                 type: 'success',

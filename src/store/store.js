@@ -15,8 +15,17 @@ export default createStore({
       state.tableNameList.push(obj);
     },
     deleteTableName(state,obj) {
-      if(!obj || state.tableNameList.indexOf(obj) == -1) return
-      state.tableNameList.splice(state.tableNameList.indexOf(obj),1);
+      console.log(state.tableNameList,obj)
+      if(!obj) return
+      let ind = 0;
+      state.tableNameList.forEach((ele,index)=>{
+        console.log(ele._id,obj._id)
+        if(ele._id == obj._id) {
+          ind = index;
+        }
+      })
+      if(ind == -1) return
+      state.tableNameList.splice(ind,1);
     },
     changeNowTag(state, obj) {
       state.nowTag.name = obj.name;
