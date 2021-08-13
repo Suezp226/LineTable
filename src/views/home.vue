@@ -149,6 +149,12 @@
         </span>
       </template>
     </el-dialog>
+    <!-- 页面加载  Loading -->
+    <transition name="el-fade-in-linear">
+      <div class="pageLoadDiv" v-if="pageLoading" >
+        <i class="el-icon-loading"></i>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -167,6 +173,7 @@ export default {
     // 路由
     const router = useRouter();
     let tableList = ref([]);
+    let pageLoading = ref(false);
 
     // Stroe
     const testStore = async function (obj) {
@@ -184,10 +191,12 @@ export default {
 
     // 获取列表显示数据
     const queryData = function () {
+      pageLoading.value = true;
       tableList.value = [];
       http.get("/table").then((res) => {
           console.log(res.data,'获取列表')
           tableList.value = res.data.list;
+          pageLoading.value = false;
       })
     };
     queryData();
@@ -280,8 +289,15 @@ export default {
       form._id = _id;
     }
 
-    // 点击新增表格
+    // 点击新增表格   目前限制最多只能新增30张表格
     const openAddForm = function () {
+      if(tableList.length > 29) {
+        ElMessage({
+          type: 'info',
+          message: '当前最多仅支持20张表格！抱歉拉~'
+        });
+        return
+      }
       toolHandleInputClose();
       doneType.value = 'add';
       form.name = '';
@@ -311,6 +327,12 @@ export default {
           addBtnLoading.value = false;
           tableList.value = [];
           queryData();
+        } else {
+          ElMessage({
+            type: 'warning',
+            message: res.data.msg
+          });
+          addBtnLoading.value = false;
         }
         console.log('添加表格',res.data)
       });
@@ -331,9 +353,15 @@ export default {
           showDialog.value = false;
           addBtnLoading.value = false;
           tableList.value = [];
-          queryData();
+        } else {
+          ElMessage({
+            type: 'warning',
+            message: res.data.msg
+          });
+          addBtnLoading.value = false;
         }
         console.log('编辑表格',res.data)
+        queryData();
       });
     }
 
@@ -437,7 +465,8 @@ export default {
       ],
       nowTool,
       addBtnLoading,
-      doneType
+      doneType,
+      pageLoading
     };
   },
 };
@@ -553,5 +582,21 @@ export default {
 }
 .bgRed {
   background: #f63f5a;
+}
+
+.pageLoadDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 100;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.77);
+  border-radius: 2px;
+  i {
+    zoom: 1.5;
+    margin-top: 26%;
+  }
 }
 </style>
