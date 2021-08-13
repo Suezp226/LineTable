@@ -27,7 +27,9 @@
     </el-menu>
     <div class="footerDesc">
       <transition name="el-fade-in-linear">
-        <div class="author">Authorization Suezp</div>
+        <div class="author">
+          <a href="https://github.com/Suezp226/LineTable" target="_blank">Authorization Suezp</a>
+        </div>
       </transition>
       <div class="beian">
         <a href="http://www.beian.gov.cn/portal/index.do">闽ICP备19006430号-2</a>
@@ -115,6 +117,11 @@
     .author {
       text-decoration: underline;
       cursor: pointer;
+      a {
+        text-decoration: none;
+        color: #000;
+        font-size: 14px;
+      }
     }
     .author:hover {
       color: #2c80c5;

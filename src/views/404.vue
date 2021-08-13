@@ -2,6 +2,7 @@
   <div class="mainBox">
     <div class="title">
       平平无奇的 404
+      <!-- <iframe src="https://suezp.cn/server/testpdf1.pdf"></iframe> -->
     </div>
   </div>
 </template>
