@@ -34,3 +34,8 @@ VUE3 + ElementPlus + Vue-router + Axios.js
 
 通过  .env.XXX  配置模式名称 在文件中 NODE_ENV=production 来申明当前基本模式 
 启动  vite build --mode XXX   来自定义模式 以及环境内容
+
+# BUG1 
+如果打开了 一个表格  返回首页再删除该表格个之后   再TAB 导航上 还是存在改tab 
+
+首页删除表格 的时候 同步以下 store 中的 TAG 
