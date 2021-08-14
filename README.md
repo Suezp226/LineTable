@@ -1,5 +1,9 @@
 # LineTable
 
+体验地址：
+
+https://linetable.suezp.cn
+
 VUE3 + ElementPlus + Vue-router + Axios.js
 
 通过前端配置的 crud 列表
@@ -19,9 +23,12 @@ VUE3 + ElementPlus + Vue-router + Axios.js
 
  ## 进度  
 
- 目前前端页面在慢慢的写 因为我想页面好看一点 所以我就比较 磨叽 ，  因为不好看的页面我就没有写下去的动力了--
- 
- 也不着急 慢慢来吧  下班
+ 目前 已完成表格的 增删改   以及 二级页面列表的 增删改查  目前的功能比较基础， 列表数据项宽度支持的更改保存。
+ 下一步把 介绍和教程写上去把  后期再多增加一些可编辑性。  
+
+ 缺陷 目前的时间选择器 功能还不太完善  后期想把编辑改为详情 以及添加一些 图片的上传和展示。
+
+ 还想做一些 流程管理带一些 等级管理的操作。
 
 
  ## 配置 VITE 
@@ -34,3 +41,14 @@ VUE3 + ElementPlus + Vue-router + Axios.js
 
 通过  .env.XXX  配置模式名称 在文件中 NODE_ENV=production 来申明当前基本模式 
 启动  vite build --mode XXX   来自定义模式 以及环境内容
+
+# BUG1 
+如果打开了 一个表格  返回首页再删除该表格个之后   再TAB 导航上 还是存在改tab 
+首页删除表格 的时候 同步以下 store 中的 TAG 
+
+---已修复
+
+
+目前的体验地址 大佬们手下留情 
+
+https://linetable.suezp.cn
