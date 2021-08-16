@@ -30,6 +30,9 @@ VUE3 + ElementPlus + Vue-router + Axios.js
 
  还想做一些 流程管理带一些 等级管理的操作。
 
+ H5 目前还没想好怎么做........
+ 研发中
+
 
  ## 配置 VITE 
 
