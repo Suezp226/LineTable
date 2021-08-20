@@ -56,6 +56,6 @@ export default {
 
 <style lang="less" scoped>
 :deep(.nut-fixednav__btn) {
-  background: #3089e4;
+  background: #3089e475;
 }
 </style>
