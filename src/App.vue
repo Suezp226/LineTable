@@ -1,32 +1,42 @@
 <template>
   <el-config-provider :locale="locale">
     <div id="app">
-      <menu-nav></menu-nav>
+      <menu-nav v-if="!isMobile" ></menu-nav>
       <div class="contentBox">
-        <header-nav></header-nav>
+        <header-nav v-if="!isMobile"></header-nav>
         <div class="routerBox" >
           <router-view></router-view>
         </div>
+        <h-5-footer-nav v-if="isMobile"></h-5-footer-nav>
       </div>
     </div>
   </el-config-provider>
 </template>
 
 <script>
-import HeaderNav from './components/HeaderNav.vue'
-import MenuNav from './components/MenuNav.vue'
-import { ElConfigProvider } from 'element-plus'
-import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import HeaderNav from './components/HeaderNav.vue';
+import MenuNav from './components/MenuNav.vue';
+import H5FooterNav from './components/H5FooterNav.vue';
+import { ElConfigProvider } from 'element-plus';
+import zhCn from 'element-plus/lib/locale/lang/zh-cn';
+import store from './store/store';
+import { mapGetters } from 'vuex';
+import { computed, ref } from 'vue'
 // Locale Wrapper 入口
 export default {
   name: 'App',
    props: {
 
   },
-  components: {HeaderNav, MenuNav, [ElConfigProvider.name]: ElConfigProvider,},
+  components: {HeaderNav, MenuNav, H5FooterNav, [ElConfigProvider.name]: ElConfigProvider,},
   setup(props) {
+    store.commit('judgeIsMobile',document.documentElement.clientWidth < 500);
+    let isMobile = ref(store.state.isMobile);
+
+    console.log(isMobile,'isMobile')
     return {
       locale: zhCn,
+      isMobile
     }
   }
 }
@@ -110,5 +120,14 @@ body {
 
 .el-tag {
   border-radius: 0px!important;
+}
+
+// H5 样式
+@media screen and (max-width: 540px) {
+  .contentBox {
+    .routerBox {
+      padding: 0;
+    }
+  }
 }
 </style>

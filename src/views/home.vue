@@ -176,7 +176,7 @@ export default {
     let pageLoading = ref(false);
 
     // Stroe
-    const testStore = async function (obj) {
+    const changeTabStore = async function (obj) {
       let jud = true;
       store.commit("changeNowTag", {name:obj.name,id:obj._id});
       await store.state.tableNameList.forEach((ele) => {
@@ -420,7 +420,14 @@ export default {
 
     //跳转表格内容
     const goTablePage = function (item) {
-      testStore(item);
+      changeTabStore(item);
+      if(store.state.isMobile) {
+        router.push({
+          path:"/H5tablePage",
+          query: {id:item._id}
+        });
+        return
+      }
       router.push({
         path:"/tablePage",
         query: {id:item._id}
@@ -450,7 +457,7 @@ export default {
       confirmDone,
       goTablePage,
       tableList,
-      testStore,
+      changeTabStore,
       options: [
         {
           value: "1",
