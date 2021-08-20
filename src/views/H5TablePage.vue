@@ -22,7 +22,7 @@
                   </span>
                 </div>
                 <div class="flowBox">
-                  <div style="margin-bottom:12px;">修改时间：</div>
+                  <div style="margin-bottom:10px;">修改时间：</div>
                   <div>{{item.modifyDate?new Date(item.modifyDate).toLocaleDateString():'暂无记录'}}</div>
                 </div>
               </li>
@@ -195,7 +195,6 @@ export default {
         position: absolute;
         right: 10px;
         top: 10px;
-        height: 90px;
         border-radius: 5px;
         width: 34%;
         box-sizing: border-box;
