@@ -40,6 +40,14 @@ const routes = [{
             import ('../views/tablePage.vue')
     },
     {
+        path: '/H5TablePage',
+        meta: {
+            desc: 'H5应用'
+        },
+        component: () =>
+            import ('../views/H5TablePage.vue')
+    },
+    {
         path: '/:pathMatch(.*)*',
         meta: {
             desc: '404'

@@ -5,6 +5,7 @@ export default createStore({
     count: 0,
     tableNameList: [],
     nowTag: {name:'',id:null},
+    isMobile: false
   },
   mutations: {
     increment (state) {
@@ -30,6 +31,9 @@ export default createStore({
     changeNowTag(state, obj) {
       state.nowTag.name = obj.name;
       state.nowTag.id = obj.id;
+    },
+    judgeIsMobile(state, bol) {
+      state.isMobile = bol;
     }
   }
 })

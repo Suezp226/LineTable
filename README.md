@@ -4,7 +4,13 @@
 
 https://linetable.suezp.cn
 
-VUE3 + ElementPlus + Vue-router + Axios.js
+VUE3 + ElementPlus + NutUI
+
+ElemetnPlus 负责WEB 端组件   https://element-plus.gitee.io/#/zh-CN
+Nut UI 负责 H5 组件   https://nutui.jd.com/#/intro
+
+Tips: 问题：Nut UI 我安装的时候 vue 版本是 3.0.x  没找到模块的错  
+      解决：  vue 升级到 3.2.4 
 
 通过前端配置的 crud 列表
 
@@ -12,7 +18,7 @@ VUE3 + ElementPlus + Vue-router + Axios.js
 
 ## 为什么要搞个表格
 
-     事情是这样的，我老姐的工作室需要统计客户信息，由于excel 用的不太好并且数据太多 有时候电脑卡，
+    事情是这样的，我老姐的工作室需要统计客户信息，由于excel 用的不太好并且数据太多 有时候电脑卡，
  我就帮她开发了个简简单单的 管理系统 一开始只有一个页面叫 周年客户数据 功能就是普遍的 增删改查功能 
  关键字搜索 编辑之类的， 过了几天==  我姐又发了我一个excel 表格过来 数据和上次不是一个表的 理所当然我
  有新开了一个页面 但是功能呢是一模一样的 除了字段不同，  晚上我姐说在外面电脑不方便，理所当然我就干了两个

@@ -176,7 +176,7 @@ export default {
     let pageLoading = ref(false);
 
     // Stroe
-    const testStore = async function (obj) {
+    const changeTabStore = async function (obj) {
       let jud = true;
       store.commit("changeNowTag", {name:obj.name,id:obj._id});
       await store.state.tableNameList.forEach((ele) => {
@@ -274,6 +274,13 @@ export default {
 
     // 点击编辑表格
     const openEditForm = function(item) {
+      if(store.state.isMobile)  {
+        ElMessage({
+          type: 'info',
+          message: '移动端还不支持编辑哦~/(ㄒoㄒ)/~~'
+        });
+        return
+      }
       console.log(item);
       toolHandleInputClose();
       doneType.value = 'edit';
@@ -291,6 +298,13 @@ export default {
 
     // 点击新增表格   目前限制最多只能新增30张表格
     const openAddForm = function () {
+      if(store.state.isMobile)  {
+        ElMessage({
+          type: 'info',
+          message: '移动端还不支持新增哦~/(ㄒoㄒ)/~~'
+        });
+        return
+      }
       if(tableList.length > 29) {
         ElMessage({
           type: 'info',
@@ -387,6 +401,13 @@ export default {
 
     // 删除 表格
     const deleteTable = function(item) {
+      if(store.state.isMobile)  {
+        ElMessage({
+          type: 'info',
+          message: '移动端还不支持删除哦~/(ㄒoㄒ)/~~'
+        });
+        return
+      }
       ElMessageBox.confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -420,7 +441,14 @@ export default {
 
     //跳转表格内容
     const goTablePage = function (item) {
-      testStore(item);
+      changeTabStore(item);
+      if(store.state.isMobile) {
+        router.push({
+          path:"/H5tablePage",
+          query: {id:item._id}
+        });
+        return
+      }
       router.push({
         path:"/tablePage",
         query: {id:item._id}
@@ -450,7 +478,7 @@ export default {
       confirmDone,
       goTablePage,
       tableList,
-      testStore,
+      changeTabStore,
       options: [
         {
           value: "1",
