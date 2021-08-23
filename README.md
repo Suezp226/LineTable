@@ -57,6 +57,11 @@ Tips: 问题：Nut UI 我安装的时候 vue 版本是 3.0.x  没找到模块的
 
 ---已修复
 
+# BUG2
+H5 页面 IOS 点击输入框页面自动放大
+
+---已修复   <meta content="user-scalable=no">
+
 
 目前的体验地址 大佬们手下留情 
 
