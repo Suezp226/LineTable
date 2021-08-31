@@ -21,6 +21,9 @@
       <el-menu-item index="/home">
         <template #title>试一试</template>
       </el-menu-item>
+      <el-menu-item index="/dragPage">
+        <template #title>拖一拽</template>
+      </el-menu-item>
       <el-menu-item index="/404">
         <template #title>404</template>
       </el-menu-item>

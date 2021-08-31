@@ -63,6 +63,9 @@ H5 页面 IOS 点击输入框页面自动放大
 ---已修复   <meta content="user-scalable=no">
 
 
+# 准备尝试将 新增表格改成 拖拽的方式 draggable="true"  👍
+
+
 目前的体验地址 大佬们手下留情 
 
 https://linetable.suezp.cn

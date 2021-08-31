@@ -48,6 +48,15 @@ const routes = [{
             import ('../views/H5TablePage.vue')
     },
     {
+        path: '/dragPage',
+        meta: {
+            desc: '拖拽构建平台'
+        },
+        name: '拖拽构建平台',
+        component: () =>
+            import ('../views/dragPage.vue')
+    },
+    {
         path: '/:pathMatch(.*)*',
         meta: {
             desc: '404'

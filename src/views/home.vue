@@ -503,6 +503,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .mainBox {
+  position: relative;
   .title {
     margin-bottom: 20px;
   }
